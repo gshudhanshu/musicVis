@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="utf-8">
+  <title>Music Player</title>
+
+  <link rel="stylesheet" href="css/font-face.css">
+  <link rel="stylesheet" type="text/css" href="css/normalize.css">
+  <link rel="stylesheet" type="text/css" href="css/style.css">
+
+  <script src="icons/all.min.js"></script>
+  <script src="lib/p5.min.js"></script>
+  <script src="lib/p5.sound.js"></script>
+  <script src="lib/dat.gui.js"></script>
+  <script src="lib/tweakpane-3.0.7.js"></script>
+  <script src="lib/quicksettings.js"></script>
+  <script src="lib/p5.dom.js"></script>
+  <script src="lib/p5.gui.js"></script>
+
+  <script src="sketch.js"></script>
+  <script src="controlsAndInput.js"></script>
+  <script src="p5Gui.js"></script>
+<!--  <script src="playerGUI.js"></script>-->
+  <script src="visualisations.js"></script>
+
+  <script src="spectrum.js"></script>
+  <script src="ridge-plots.js"></script>
+  <script src="circle-line.js"></script>
+  <script src="reactive-circles.js"></script>
+  <script src="threeD-space-rocket.js"></script>
+
+</head>
+<body>
+
+<div class="vis_container">
+  <div class="vis spectrum"></div>
+  <div class="vis ridge_plots"></div>
+  <div class="vis circle_line"></div>
+  <div class="vis reactive_circles"></div>
+  <div class="vis 3d_space_rocket"></div>
+</div>
+<section>
+  <div class="bottom_player">
+    <div class="play_list_drawer" style="display: none;">
+      <div class="scroll_playlist">
+        <div class="play_list_container">
+          <ul class="player_data">
+            <li class="header_row">
+              <div class="column_one ver_hor_center">No</div>
+              <div class="column_two ver_hor_center">Thumbnail</div>
+              <div class="column_three ver_hor_center">Track Name</div>
+              <div class="column_four ver_hor_center">Composer</div>
+              <div class="column_five ver_hor_center">Length</div>
+            </li>
+            <li class="music_row">
+              <div class="column_one track_index ver_hor_center">1</div>
+              <img class="column_two track_thumb ver_hor_center" src="assets/thumb/thumb.jpg" alt="thumb">
+              <div class="column_three track_title ver_hor_center">Sample track</div>
+              <div class="column_four track_composer ver_hor_center">Sample composer</div>
+              <div class="column_five track_length ver_hor_center">4:13</div>
+            </li>
+            <li class="music_row">
+            </li>
+            <li class="music_row"></li>
+            <li class="music_row"></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="player_wrapper">
+      <div class="player_row">
+        <div class="track_title ver_hor_center">
+          Sample track
+        </div>
+        <div class="player_controls">
+          <i class="fas fa-step-backward previous btn" onclick="previousMusic()"></i>
+          <div class="playPauseSwitch ver_hor_center" >
+            <i class="fas fa-play play btn"></i>
+<!--            <i class="fas fa-pause pause btn"></i>-->
+          </div>
+          <i class="fas fa-step-forward next btn" onclick="nextMusic()"></i>
+          <div class="timeline ver_hor_center">
+            <div class="progressbar ver_hor_center"></div>
+          </div>
+          <div class="track_timer ver_hor_center">00:00</div>
+          <div class="volume ver_hor_center">
+            <i class="volume fas fa-volume-up"></i>
+            <ul>
+              <li class="vol volume_zero">0</li>
+              <li class="vol volume_one">1</li>
+              <li class="vol volume_two">2</li>
+              <li class="vol volume_three">3</li>
+              <li class="vol volume_four">4</li>
+            </ul>
+          </div>
+        </div>
+<!--        <div class="ver_hor_center fas fa-bars playlist_expander"></div>-->
+        <div class="ver_hor_center playlist_expander">
+          <i class="fas fa-bars"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script src="playerGUI.js"></script>
+</body>
+</html>
