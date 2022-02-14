@@ -6,26 +6,14 @@ function RidgePlots(){
 	}
 	
     
-    this.addDatGui = function() {
+    this.addPaneGui = function() {
 		
-        var guiFolder = gui.addFolder("RidgePlots"); 
 
-
-
-        guiFolder.add(this.datGui, 'name').onChange(function (value) {
-			this.datGui = value;
-			// init();
-		  });
-	
-        guiFolder.add(this.datGui, 'arcSize', [150,200,300]).onChange(function (value) {
-			// init();
-		  });
 
     }
 
-    this.removeDatGui = function(){
-        gui.removeFolder();
-        // console.log(gui)
+    this.removePaneGui = function(){
+        paneFolder.dispose();
     }
 
 	this.draw = function(){

@@ -9,7 +9,7 @@ var soundArr = [];
 var fourier;
 var currentMusic = 0;
 
-var pane, guiFolder;
+var pane, paneFolder;
 
 var musicPlaylist = [
 	{path: 'assets/stomper_reggae_bit.mp3',
@@ -39,9 +39,6 @@ function setup(){
 	 //instantiate the fft object
 	 fourier = new p5.FFT();
 
-	//  DAT GUI
-	pane = new Tweakpane.Pane();
-
 	 //create a new visualisation container and add visualisations
 	 vis = new Visualisations();
 	 vis.add(new Spectrum());
@@ -50,6 +47,9 @@ function setup(){
 	 vis.add(new ReactiveCircles());
 	 vis.add(new ThreeDSpaceRocket());
 
+
+	//  DAT GUI
+	pane = new Tweakpane.Pane();
 	vis.selectedVisual.addPaneGui(pane);
 
 }

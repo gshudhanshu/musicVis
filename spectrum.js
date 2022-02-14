@@ -1,51 +1,70 @@
 //Contructor function for Spectrum Vis
 function Spectrum(){
 	this.name = "Spectrum";
-	this.datGui = {
+	this.panePARAMS = {
 		name: this.name,
-		bins: 64
+		bins: 64,
+		colHeight: 70,
+		lowFreqColor: {r: 0, g:215, b: 255},
+		highFreqColor: {r: 255, g:50, b: 200}
 	}
-	// this.bins = 64;
 
 	  this.addPaneGui = function(pane) {
-
-		guiFolder = gui.addFolder("Spectrum"); 
-		guiFolder.add(this.datGui, 'name').onChange(function (value) {
-			this.datGui = value;
-			// init();
+		  console.log(pane)
+		paneFolder = pane.addFolder({
+			title: this.panePARAMS.name,
 		  });
-	
-		  guiFolder.add(this.datGui, 'bins', [8,32,64]).onChange(function (value) {
-			// init();
+		//   pane.title = this.panePARAMS.name;
+		paneFolder.addInput(this.panePARAMS, 'bins', {
+			options: {
+			  low: 16,
+			  medium: 32,
+			  high: 64,
+			},
 		  });
+		  paneFolder.addInput(this.panePARAMS, 'colHeight', {
+			min: 0,
+			max: 100,
+		  });
+		  paneFolder.addInput(this.panePARAMS, 'lowFreqColor');
+		  paneFolder.addInput(this.panePARAMS, 'highFreqColor');
     }
 
-    this.removeDatGui = function(){
-		gui.removeFolder(Spectrum)
+    this.removePaneGui = function(){
+		paneFolder.dispose();
     }
 
 	this.draw = function(){
 		push();
 		// var spectrum = fourier.analyze(this.bins);
 		// var spectrum = fourier.smooth(0.8);
-		var spectrum = fourier.analyze(this.datGui.bins);
+		var spectrum = fourier.analyze(this.panePARAMS.bins);
 		// console.log(spectrum);
 		noStroke();
 
-		for(var i = 0; i<this.datGui.bins; i++){
+
+		for(var i = 0; i<this.panePARAMS.bins; i++){
 
 			//fade the colour of the bin from green to red
-			var g = map(spectrum[i], 0, 255, 255, 0);
-			fill(spectrum[i], g, 255);
+			var r = map(spectrum[i],
+				0, 255,
+				this.panePARAMS.lowFreqColor.r, this.panePARAMS.highFreqColor.r);
+			var g = map(spectrum[i],
+				0,	255,
+				this.panePARAMS.lowFreqColor.g, this.panePARAMS.highFreqColor.g);
+			var b = map(spectrum[i],
+				0, 255,
+				this.panePARAMS.lowFreqColor.b, this.panePARAMS.highFreqColor.b);
+			fill(r, g, b);
 
 			//draw each bin as a rectangle from the left of the screen
 			//bottop to top
 
-			var x = map(i, 0, this.datGui.bins, width*0.15, width*0.85);
-			var h = map(spectrum[i], 0, 255, 0, -height*0.7);
+			var x = map(i, 0, this.panePARAMS.bins, width*0.15, width*0.85);
+			var h = map(spectrum[i], 0, 255, 0, -height*this.panePARAMS.colHeight/100);
 
-			rect(x, height*0.88, width*0.65/this.datGui.bins, h);
-			rect(x, height*0.88, width*0.65/this.datGui.bins, -5);
+			rect(x, height*0.88, width*0.65/this.panePARAMS.bins, h);
+			rect(x, height*0.88, width*0.65/this.panePARAMS.bins, -5);
 
 		}  		
 		pop();
