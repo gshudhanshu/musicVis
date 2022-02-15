@@ -1,3 +1,4 @@
+//Contructor function for ridge-plots Vis
 function RidgePlots(){
     this.name = "Ridge Plots";
 	this.panePARAMS = {
@@ -9,7 +10,6 @@ function RidgePlots(){
         lineGap: 30,
         smallScale:5,
         bigScale:50
-
 	}
     
     this.addPaneGui = function() {
@@ -50,7 +50,7 @@ function RidgePlots(){
 	var startX = width/2;
 	var startY = height/2
     var output = [];
-    var fourier = new p5.FFT();
+    var fourier = new p5.FFT(0.4, 1024);
     
 this.addWave = function(){
     

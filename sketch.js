@@ -42,6 +42,7 @@ function preload(){
 function setup(){
 	 createCanvas(windowWidth, windowHeight);
 	 background(0);
+	 frameRate(60);
 	 sound = soundArr[currentMusic];
 	 controls = new ControlsAndInput();
 	 //instantiate the fft object
