@@ -11,7 +11,7 @@ function ControlsAndInput(){
 	// this.mousePressed = function(){
 	// 	if(!this.playbackButton.hitCheck()){
 	// 		var fs = fullscreen();
-	// 		fullscreen(!fs);
+	// 		fullscreen(!fs); 2
 	// 	}
 	// };
 

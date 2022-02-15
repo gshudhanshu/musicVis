@@ -10,7 +10,6 @@ function Spectrum(){
 	}
 
 	  this.addPaneGui = function(pane) {
-		  console.log(pane)
 		paneFolder = pane.addFolder({
 			title: this.panePARAMS.name,
 		  });
@@ -38,7 +37,7 @@ function Spectrum(){
 		push();
 		// var spectrum = fourier.analyze(this.bins);
 		// var spectrum = fourier.smooth(0.8);
-		var spectrum = fourier.analyze(this.panePARAMS.bins);
+		var  spectrum = fourier.analyze(this.panePARAMS.bins);
 		// console.log(spectrum);
 		noStroke();
 

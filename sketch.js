@@ -19,7 +19,15 @@ var musicPlaylist = [
 	{path: 'assets/Christmas Magic - AShamaluevMusic.mp3',
 		thumb: 'assets/thumb/thumb.jpg',
 		title: 'Christmas Magic',
-		composer: 'comp1', length: '3:41'}
+		composer: 'comp1', length: '3:41'},
+	{path: 'assets/Jo Bheji Thi Dua Remix 2022 - DJ Shadow Dubai(DJSathi).mp3',
+		thumb: 'assets/thumb/thumb.jpg',
+		title: 'Jo Bheji Thi Dua Remix 2022',
+		composer: 'comp1', length: '3:41'},
+	{path: 'assets/Unconditional Breakup Mashup 2022 - Aftermorning(DJSathi).mp3',
+		thumb: 'assets/thumb/thumb.jpg',
+		title: 'Unconditional Breakup Mashup 2022',
+		composer: 'comp1', length: '3:41'}	
 ]
 
 
