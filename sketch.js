@@ -42,11 +42,15 @@ function preload(){
 function setup(){
 	 createCanvas(windowWidth, windowHeight);
 	 background(0);
+
 	 frameRate(60);
-	 sound = soundArr[currentMusic];
-	 controls = new ControlsAndInput();
+
 	 //instantiate the fft object
 	 fourier = new p5.FFT();
+
+	 sound = soundArr[currentMusic];
+	 controls = new ControlsAndInput();
+
 
 	 //create a new visualisation container and add visualisations
 	 vis = new Visualisations();

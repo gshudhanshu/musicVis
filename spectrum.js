@@ -34,6 +34,7 @@ function Spectrum(){
     }
 
 	this.draw = function(){
+		colorMode(RGB, 255);
 		push();
 		// var spectrum = fourier.analyze(this.bins);
 		// var spectrum = fourier.smooth(0.8);
