@@ -6,7 +6,7 @@ function CircleLine(){
         ellipseSize: 200,
         scale:1,
         particleSize: 10,
-        lowFreqColor: {h: 255, s:50, v: 500, alpha: 1},
+        // lowFreqColor: 'hsla(0, 0, 100, 1)',
         // highFreqColor: {h: 255, s:100, v: 100, a:1}
     }
 
@@ -25,7 +25,7 @@ function CircleLine(){
             max: 25,
             step: 1
         });
-        paneFolder.addInput(this.panePARAMS, 'lowFreqColor');
+        // paneFolder.addInput(this.panePARAMS, 'lowFreqColor');
         // paneFolder.addInput(this.panePARAMS, 'highFreqColor');
     }
 
@@ -41,6 +41,7 @@ function CircleLine(){
     var x, y;
     var fourier = new p5.FFT();
 
+    this.setup = function() {   }
 
     this.draw = function(){
         colorMode(HSB, 360,100,100)

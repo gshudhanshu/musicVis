@@ -33,6 +33,8 @@ function Spectrum(){
 		paneFolder.dispose();
     }
 
+	this.setup = function() {   }
+
 	this.draw = function(){
 		colorMode(RGB, 255);
 		push();
@@ -68,6 +70,6 @@ function Spectrum(){
 
 		}  		
 		pop();
-	};
+	}
 }
 

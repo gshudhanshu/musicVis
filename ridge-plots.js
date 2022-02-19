@@ -86,6 +86,8 @@ this.addWave = function(){
 
     }
 
+    this.setup = function() {   }
+
 	this.draw = function(){
         colorMode(RGB, 255);
         angleMode(DEGREES);
