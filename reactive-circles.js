@@ -2,9 +2,9 @@ function ReactiveCircles(){
     this.name = "Reactive Circles";
     this.panePARAMS = {
         name: this.name,
-        pColor: 'FFFF00',
-        sColor: 'FF00FF',
-        tColor: '00FFFD'
+        pColor: '#ffff00',
+        sColor: '#ff00ff',
+        tColor: '#00fffd'
     }
 
     this.addPaneGui = function(pane) {
@@ -18,40 +18,57 @@ function ReactiveCircles(){
         paneFolder.dispose();
     }
 
-    let t = [];
-    let COLS = [this.panePARAMS.pColor, this.panePARAMS.sColor,this.panePARAMS.tColor]
+    var t = [];
+    var COLS = [this.panePARAMS.pColor, this.panePARAMS.sColor,this.panePARAMS.tColor]
+
+    var fourier = new p5.FFT();
 
 
     this.setup = function() {
-        for(let i = 0; i < 3; i++){
-            t.push(new WaveCircle(createVector(width /2, height /2), 50, width * 0.2, width * 0.3, COLS[i], 0.1 + i * 0.25, 0.95));
-        }
+
     }
 
     this.draw = function(){
         colorMode(RGB, 255);
+        angleMode(RADIANS);
         push();
 
-        var  spectrum = fourier.analyze(this.panePARAMS.bins);
+        if(t.length<3){
+            for(let i = 0; i < 3; i++){
+                t.push(new WaveCircle(createVector(width /2, height /2),
+                    50, width * 0.2, width * 0.3,
+                    COLS[i], 0.1 + i * 0.25, 0.95));
+            }
+        }
 
+        var  spectrum = fourier.analyze();
+        var bass = map(fourier.getEnergy("bass"),0,255,0,1);
+        var treble = map(fourier.getEnergy("treble"),0,255,0,1);
 
+        // blendMode(BLEND);
+        // background(255);
+        // blendMode(MULTIPLY);
 
-
-        blendMode(BLEND);
-        background(255);
-        blendMode(MULTIPLY);
         for(const i of t){
             i.drawWave();
             i.updateWave();
+
         }
 
-        if(mouseIsPressed){
+        // if(mouseIsPressed){
             for(const i of t){
                 const d = dist(i.center.x, i.center.y, mouseX, mouseY);
                 const v = map(d, 0, i.radius * 1.5, -i.radius / 4, -1, true);
-                i.addVel(createVector(mouseX, mouseY),v);
+
+
+                i.addVel(createVector(width /2-width * 0.2, height /2-width * 0.2),bass*20);
+                i.addVel(createVector(width /2-width * 0.2, height /2+width * 0.2),treble*30);
+
+                i.addVel(createVector(width /2+width * 0.2, height /2-width * 0.2),bass*20);
+                i.addVel(createVector(width /2+width * 0.2, height /2+width * 0.2),treble*30);
+
             }
-        }
+        // }
 
         pop();
     }

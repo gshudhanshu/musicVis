@@ -64,6 +64,7 @@ function setup(){
 	//  DAT GUI
 	pane = new Tweakpane.Pane();
 	vis.selectedVisual.addPaneGui(pane);
+
 	vis.selectedVisual.setup();
 
 }
