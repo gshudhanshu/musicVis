@@ -6,7 +6,7 @@ var vis = null;
 var sound, sound0, sound1, sound2, sound3,sound4;
 var soundArr = [];
 //variable for p5 fast fourier transform
-var fourier;
+var fourier, compressor;
 var currentMusic = 0;
 
 var pane, paneFolder;
@@ -37,11 +37,16 @@ function preload(){
 	for(var i = 0; i<musicPlaylist.length; i++){
 		soundArr.push(loadSound(musicPlaylist[i].path));
 	}
+	bgImg = loadImage("https://images.unsplash.com/photo-1482686115713-0fbcaced6e28?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=747")
+
 }
 
 function setup(){
-	 createCanvas(windowWidth, windowHeight);
+	createCanvas(windowWidth, windowHeight);
+	imageMode(CENTER);
 	 background(0);
+	 bgImg.filter(BLUR, 1)
+
 
 	 frameRate(60);
 
