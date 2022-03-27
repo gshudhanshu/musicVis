@@ -3,34 +3,31 @@ function ThreeDSpaceRocket(){
     this.name = "ThreeDSpaceRocket";
     this.panePARAMS = {
         name: this.name,
-        bins: 64,
-        colHeight: 70,
-        lowFreqColor: {r: 0, g:215, b: 255},
-        highFreqColor: {r: 255, g:50, b: 200}
+        camera: {x: 0, y: -500, z: 20},
+        camRotation: {x: 1.5308176374382183, y: 0, z: 0}
     }
 
     this.addPaneGui = function(pane) {
         paneFolder = pane.addFolder({
             title: this.panePARAMS.name,
         });
-        //   pane.title = this.panePARAMS.name;
-        paneFolder.addInput(this.panePARAMS, 'bins', {
-            options: {
-                low: 16,
-                medium: 32,
-                high: 64,
-            },
+
+        paneFolder.addInput(this.panePARAMS, 'camera', {
+            x: {min: -500, max: 500},
+            y: {min: -2000, max: 2000},
+            z: {min: 0, max: 500},
         });
-        paneFolder.addInput(this.panePARAMS, 'colHeight', {
-            min: 0,
-            max: 100,
+        paneFolder.addInput(this.panePARAMS, 'camRotation', {
+            x: {min: -Math.PI, max: Math.PI},
+            y: {min: -Math.PI, max: Math.PI},
+            z: {min: -Math.PI, max: Math.PI},
         });
-        paneFolder.addInput(this.panePARAMS, 'lowFreqColor');
-        paneFolder.addInput(this.panePARAMS, 'highFreqColor');
+
     }
 
     this.removePaneGui = function(){
         paneFolder.dispose();
+        // document.getElementById('threeJsCanvas').remove();
     }
 
     this.setup = function() {
@@ -56,23 +53,29 @@ function ThreeDSpaceRocket(){
 
     var velocity = 0;
 
+    var self = this
 
     init();
 
     function init(){
 
         renderer = new THREE.WebGLRenderer( { antialias: false } );
+        renderer.domElement.id = 'threeJsCanvas';
 
         renderer.setSize( window.innerWidth, window.innerHeight );
 
-        document.body.appendChild(renderer.domElement);
+        // document.body.appendChild(renderer.domElement);
+
+        let p5Canvas = document.getElementsByClassName("p5Canvas")[0];
+        p5Canvas.before(renderer.domElement);
 
         renderer.setClearColor(0x000000, 1.0);
 
         camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, horizon);
 
-        camera.position.y = -500;
-        camera.position.z = 20;
+        camera.position.x = self.panePARAMS.camera.x;
+        camera.position.y = self.panePARAMS.camera.y;
+        camera.position.z = self.panePARAMS.camera.z;
 
         camera.lookAt(new THREE.Vector3(0,0,0));
 
@@ -251,6 +254,16 @@ function ThreeDSpaceRocket(){
     }
 
     function render() {
+        camera.position.x = self.panePARAMS.camera.x;
+        camera.position.y = self.panePARAMS.camera.y;
+        camera.position.z = self.panePARAMS.camera.z;
+
+        console.log(camera.rotation)
+
+        camera.rotation.x = self.panePARAMS.camRotation.x
+        camera.rotation.y = self.panePARAMS.camRotation.y
+        camera.rotation.z = self.panePARAMS.camRotation.z
+
         renderer.render( scene, camera );
     }
 
