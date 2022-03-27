@@ -38,19 +38,21 @@ function preload(){
 		soundArr.push(loadSound(musicPlaylist[i].path));
 	}
 	bgImg = loadImage("https://images.unsplash.com/photo-1482686115713-0fbcaced6e28?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=747")
+	emblem = loadImage('./icons/P5.js_icon.svg');
+	myFont = loadFont('/font/Oswald-Regular.ttf');
 
 }
 
 function setup(){
 	createCanvas(windowWidth, windowHeight);
-	imageMode(CENTER);
+	// createCanvas(400, 400);
+	 imageMode(CENTER);
 	 background(0);
 	 bgImg.filter(BLUR, 1)
-
-
+	 textFont(myFont);
 	 frameRate(60);
 
-	 //instantiate the fft object
+	//instantiate the fft object
 	 fourier = new p5.FFT();
 
 	 sound = soundArr[currentMusic];
