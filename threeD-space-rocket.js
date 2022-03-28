@@ -51,7 +51,7 @@ function ThreeDSpaceRocket(){
     const wheels = [];
 
     var paused = false;
-    var speed = 10;
+    var speed = 1;
     var horizon = 3000;
 
     var time = Date.now();
@@ -68,7 +68,7 @@ function ThreeDSpaceRocket(){
 
         const container = document.getElementById( 'threeJsContainer' );
 
-        renderer = new THREE.WebGLRenderer( { antialias: true } );
+        renderer = new THREE.WebGLRenderer( { antialias: false } );
         renderer.domElement.id = 'threeJsCanvas';
 
         renderer.setPixelRatio( window.devicePixelRatio );
@@ -92,17 +92,20 @@ function ThreeDSpaceRocket(){
 
         camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, horizon);
 
+        camera.position.y = -500;
+        camera.position.z = 20;
+
         // camera.position.x = self.panePARAMS.camera.x;
         // camera.position.y = self.panePARAMS.camera.y;
         // camera.position.z = self.panePARAMS.camera.z;
 
         camera.lookAt(new THREE.Vector3(0,0,0));
 
-        controls = new OrbitControls( camera, container );
-        controls.enableDamping = true;
-        controls.maxDistance = 9;
-        controls.target.set( 0, 0.5, 0 );
-        controls.update();
+        // controls = new OrbitControls( camera, container );
+        // controls.enableDamping = true;
+        // controls.maxDistance = 9;
+        // controls.target.set( 0, 0.5, 0 );
+        // controls.update();
 
         scene = new THREE.Scene();
         scene.background = new THREE.Color( 0x333333 );
@@ -120,7 +123,8 @@ function ThreeDSpaceRocket(){
         grid.material.opacity = 0.2;
         grid.material.depthWrite = false;
         grid.material.transparent = true;
-        scene.add( grid );
+        grid.rotateX(Math.PI/2)
+        // scene.add( grid );
 
 
         //Materials
@@ -190,15 +194,19 @@ function ThreeDSpaceRocket(){
 
             // shadow
             const mesh = new THREE.Mesh(
-                new THREE.PlaneGeometry( 0.655 * 4, 1.3 * 4 ),
+                new THREE.PlaneGeometry( 0.655 * 4 *12, 1.3 * 4 *12 ),
                 new THREE.MeshBasicMaterial( {
                     map: shadow, blending: THREE.MultiplyBlending, toneMapped: false, transparent: true
                 } )
             );
             mesh.rotation.x = - Math.PI / 2;
             mesh.renderOrder = 2;
+
+            carModel.scale.set(12,12,12)
+
             carModel.add( mesh );
 
+            carModel.rotation.x = Math.PI/2;
             scene.add( carModel );
 
         } );
@@ -227,7 +235,7 @@ function ThreeDSpaceRocket(){
             new THREE.PlaneGeometry(horizon, horizon, planeSegments, planeSegments),
             new THREE.MeshBasicMaterial({ color:0x00FF00, wireframe:true, transparent:true })
         );
-        plane.position.z = -20;
+        plane.position.z = 0;
 
         planes[0] = plane;
 
@@ -349,7 +357,6 @@ function ThreeDSpaceRocket(){
                 planes[1].position.y +=- speed ;
                 planes[2].position.y +=- speed ;
 
-
             }
 
             moveCamera( Date.now() - time );
@@ -380,14 +387,14 @@ function ThreeDSpaceRocket(){
         // camera.rotation.y = self.panePARAMS.camRotation.y
         // camera.rotation.z = self.panePARAMS.camRotation.z
 
-        controls.update();
+        // controls.update();
 
         const time = - performance.now() / 1000;
         for ( let i = 0; i < wheels.length; i ++ ) {
             wheels[ i ].rotation.x = time * Math.PI * 2;
         }
 
-        grid.position.z = - ( time ) % 1;
+        grid.position.y = + ( time ) % 1;
         renderer.render( scene, camera );
         stats.update();
     }
