@@ -12,6 +12,7 @@ function ReactiveCircles() {
         color6: '#0000ff',
         color7: '#33ccff',
         color8: '#00ff00',
+        particleThreshold: 190
     }
 
     this.addPaneGui = function (pane) {
@@ -19,9 +20,23 @@ function ReactiveCircles() {
             title: this.panePARAMS.name,
         });
 
+        paneFolder.addInput(this.panePARAMS, 'particleThreshold', {
+            min: 100,
+            max: 250,
+        });
+
+        paneFolder.addInput(this.panePARAMS, 'color1');
+        paneFolder.addInput(this.panePARAMS, 'color2');
+        paneFolder.addInput(this.panePARAMS, 'color3');
+        paneFolder.addInput(this.panePARAMS, 'color4');
+        paneFolder.addInput(this.panePARAMS, 'color5');
+        paneFolder.addInput(this.panePARAMS, 'color6');
+        paneFolder.addInput(this.panePARAMS, 'color7');
+        paneFolder.addInput(this.panePARAMS, 'color8');
+
     }
 
-    this.removePaneGui = function () {
+    this.removePaneGui = function(){
         paneFolder.dispose();
     }
 
@@ -37,7 +52,6 @@ function ReactiveCircles() {
 
     var particles = []
 
-
     var fourier = new p5.FFT(this.panePARAMS.smoothing, this.panePARAMS.bins);
 
     this.setup = function () {
@@ -47,14 +61,17 @@ function ReactiveCircles() {
     }
 
     this.draw = function () {
+
+        colors = [this.panePARAMS.color1, this.panePARAMS.color2, this.panePARAMS.color3,
+            this.panePARAMS.color4, this.panePARAMS.color5, this.panePARAMS.color6,
+            this.panePARAMS.color7, this.panePARAMS.color8];
+
         colorMode(RGB, 255);
         // angleMode(RADIANS);
         angleMode(DEGREES)
 
-
         fourier.analyze()
         let amp = fourier.getEnergy(20, 200)
-         console.log(amp)
 
         push()
         translate(width/2, height/2)
@@ -117,7 +134,7 @@ function ReactiveCircles() {
 
         for(var i = particles.length - 1; i >= 0; i--) {
             if(!particles[i].edges()) {
-                particles[i].update(amp > 230)
+                particles[i].update(amp > this.panePARAMS.particleThreshold)
                 particles[i].show()
             } else {
                 particles.splice(i, 1)

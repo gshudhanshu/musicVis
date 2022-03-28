@@ -12,8 +12,8 @@ function ThreeDSpaceRocket(){
     this.name = "ThreeDSpaceRocket";
     this.panePARAMS = {
         name: this.name,
-        camera: {x: 0, y: -500, z: 20},
-        camRotation: {x: 1.5308176374382183, y: 0, z: 0}
+        // camera: {x: 0, y: -500, z: 20},
+        // camRotation: {x: 1.5308176374382183, y: 0, z: 0},
     }
 
     this.addPaneGui = function(pane) {
@@ -21,10 +21,8 @@ function ThreeDSpaceRocket(){
             title: this.panePARAMS.name,
         });
 
-        paneFolder.addInput(this.panePARAMS, 'camera', {
-            x: {min: -500, max: 500},
-            y: {min: -2000, max: 2000},
-            z: {min: 0, max: 500},
+        paneFolder.addInput(this.panePARAMS, 'carColor', {
+            view: 'color',
         });
         paneFolder.addInput(this.panePARAMS, 'camRotation', {
             x: {min: -Math.PI, max: Math.PI},
@@ -46,12 +44,11 @@ function ThreeDSpaceRocket(){
 
     var polys, planes;
 
-    var stats, controls, grid;
-
+    var stats, controls;
     const wheels = [];
 
     var paused = false;
-    var speed = 1;
+    var speed = 10;
     var horizon = 3000;
 
     var time = Date.now();
@@ -61,71 +58,46 @@ function ThreeDSpaceRocket(){
 
     var velocity = 0;
 
-    var self = this
+    var fourier = new p5.FFT();
 
-    init()
+
+    init();
+
+
     function init(){
 
         const container = document.getElementById( 'threeJsContainer' );
 
         renderer = new THREE.WebGLRenderer( { antialias: false } );
+        renderer.setSize( window.innerWidth, window.innerHeight );
         renderer.domElement.id = 'threeJsCanvas';
 
-        renderer.setPixelRatio( window.devicePixelRatio );
-        renderer.setSize( window.innerWidth, window.innerHeight );
-
-        // renderer.setAnimationLoop( render );
-        renderer.outputEncoding = THREE.sRGBEncoding;
-        renderer.toneMapping = THREE.ACESFilmicToneMapping;
-        renderer.toneMappingExposure = 0.85;
-
-        // let p5Canvas = document.getElementsByClassName("p5Canvas")[0];
-        // p5Canvas.before(renderer.domElement);
-        // const threeJsCanvas = renderer.domElement;
-
         container.appendChild( renderer.domElement );
-
-        stats = new Stats();
-        container.appendChild( stats.dom );
 
         renderer.setClearColor(0x000000, 1.0);
 
         camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, horizon);
 
         camera.position.y = -500;
-        camera.position.z = 20;
-
-        // camera.position.x = self.panePARAMS.camera.x;
-        // camera.position.y = self.panePARAMS.camera.y;
-        // camera.position.z = self.panePARAMS.camera.z;
+        camera.position.z = 100;
 
         camera.lookAt(new THREE.Vector3(0,0,0));
 
-        // controls = new OrbitControls( camera, container );
+        controls = new OrbitControls( camera, container );
         // controls.enableDamping = true;
         // controls.maxDistance = 9;
         // controls.target.set( 0, 0.5, 0 );
-        // controls.update();
+        controls.update();
 
         scene = new THREE.Scene();
+        scene.fog = new THREE.FogExp2( 0x000000, 0.0005 );
+
         scene.background = new THREE.Color( 0x333333 );
         scene.environment = new RGBELoader().load( './assets/textures/venice_sunset_1k.hdr' );
         scene.environment.mapping = THREE.EquirectangularReflectionMapping;
-        scene.fog = new THREE.Fog( 0x333333, 10, 15 );
 
-        // scene = new THREE.Scene();
-        // scene.fog = new THREE.FogExp2( renderer.getClearColor(), 0.0005 );
-        scene.fog = new THREE.FogExp2( 0x000000, 0.0005 );
         addPlanes();
         addPolys();
-
-        grid = new THREE.GridHelper( 20, 40, 0xffffff, 0xffffff );
-        grid.material.opacity = 0.2;
-        grid.material.depthWrite = false;
-        grid.material.transparent = true;
-        grid.rotateX(Math.PI/2)
-        // scene.add( grid );
-
 
         //Materials
         const bodyMaterial = new THREE.MeshPhysicalMaterial( {
@@ -175,6 +147,8 @@ function ThreeDSpaceRocket(){
 
             const carModel = gltf.scene.children[ 0 ];
 
+            carModel.scale.set(30,30,30)
+
             carModel.getObjectByName( 'body' ).material = bodyMaterial;
 
             carModel.getObjectByName( 'rim_fl' ).material = detailsMaterial;
@@ -194,15 +168,13 @@ function ThreeDSpaceRocket(){
 
             // shadow
             const mesh = new THREE.Mesh(
-                new THREE.PlaneGeometry( 0.655 * 4 *12, 1.3 * 4 *12 ),
+                new THREE.PlaneGeometry( 0.655 * 4, 1.3 * 4 ),
                 new THREE.MeshBasicMaterial( {
                     map: shadow, blending: THREE.MultiplyBlending, toneMapped: false, transparent: true
                 } )
             );
             mesh.rotation.x = - Math.PI / 2;
             mesh.renderOrder = 2;
-
-            carModel.scale.set(12,12,12)
 
             carModel.add( mesh );
 
@@ -213,15 +185,15 @@ function ThreeDSpaceRocket(){
 
 
 
-        // window.addEventListener( 'resize', onWindowResize, false );
-        // window.addEventListener('keydown', onKeyDown, false);
-        // window.addEventListener('keyup', onKeyUp, false);
-        // window.addEventListener('touchstart', onTouchStart, false);
-        // window.addEventListener('touchend', onTouchEnd, false);
-        // window.addEventListener('mousedown', onTouchStart, false);
-        // window.addEventListener('mouseup', onTouchEnd, false);
-        // window.addEventListener('touchmove', onTouchEnd, false);
-        // window.addEventListener('deviceorientation', onOrientation, false);
+        window.addEventListener( 'resize', onWindowResize, false );
+        window.addEventListener('keydown', onKeyDown, false);
+        window.addEventListener('keyup', onKeyUp, false);
+        window.addEventListener('touchstart', onTouchStart, false);
+        window.addEventListener('touchend', onTouchEnd, false);
+        window.addEventListener('mousedown', onTouchStart, false);
+        window.addEventListener('mouseup', onTouchEnd, false);
+        window.addEventListener('touchmove', onTouchEnd, false);
+        window.addEventListener('deviceorientation', onOrientation, false);
 
 
     }
@@ -251,123 +223,105 @@ function ThreeDSpaceRocket(){
 
     }
 
-
+    var cubesLeft, cubesRight, cube;
+    var cubeSize;
     function addPolys(){
 
-        polys = [];
+        var darkMaterial = new THREE.MeshBasicMaterial( { color: 0x000000, transparent: false, opacity: 0.5 } );
 
-        var darkMaterial = new THREE.MeshBasicMaterial( { color: 0x000000, transparent: true, opacity: 0.5 } );
-
-        var cube = createMultiMaterialObject(
-            new THREE.BoxGeometry(30,30,30),
+        var totalcubes = 200;
+        cubesRight = [];
+        cubesLeft = [];
+        cubeSize =  40;
+        cube = createMultiMaterialObject(
+            new THREE.BoxGeometry(cubeSize,cubeSize,10),
             [darkMaterial, new THREE.MeshBasicMaterial( { color: 0xCF0505, wireframe: true, wireframeLinewidth: 3} )]
         );
 
-        var tetra = createMultiMaterialObject(
-            new THREE.TetrahedronGeometry( 15, 0),
-            [darkMaterial, new THREE.MeshBasicMaterial( { color: 0xF6790B, wireframe: true, wireframeLinewidth: 3} )]
-        );
+        cube.position.set(150, 0, 20);
 
-        var octa = createMultiMaterialObject(
-            new THREE.OctahedronGeometry( 10, 0),
-            [darkMaterial, new THREE.MeshBasicMaterial( { color: 0x17C2EA, wireframe: true, wireframeLinewidth: 3} )]
-        );
+        for(let i = 0; i < totalcubes; i++){
+            cubesRight[i] = cube.clone();
+                cubesRight[i].position.x = 150;
 
-        var totalPolys = 100;
-
-        for(var i = 0; i < totalPolys; i++){
-            var poly;
-            if(i < (totalPolys * 0.6)){
-                poly = octa.clone();
-            } else if(i >= totalPolys * 0.6 && i < totalPolys * 0.9){
-                poly = tetra.clone();
-            } else {
-                poly = cube.clone();
-            }
-
-            poly.position.set(Math.random() * horizon - horizon/2, Math.random() * horizon + horizon/2, 20);
-
-            poly.spinX = (Math.random() * 20 - 10) / 1000;
-            poly.spinY = (Math.random() * 4 - 2) /100;
-            poly.modX = (Math.random() * 3 - 2)/10;
-            poly.modY = (Math.random() * 10 - 5)/10;
-            polys.push(poly);
-            scene.add( poly );
+            cubesRight[i].position.y = cube.position.y + cubeSize/2*i;
+            scene.add( cubesRight[i] );
         }
 
+        cube.position.set(-150, 0, 20);
 
-        // Cones
-
-        for(var i = 0; i < 10; i++){
-
-            poly = createMultiMaterialObject(
-                new THREE.CylinderGeometry( 0, 30, 100, 20, 4 ),
-                [darkMaterial, new THREE.MeshBasicMaterial( { color: 0xCDF346, wireframe: true, wireframeLinewidth: 3} )]
-            );
-
-            poly.position.set(Math.random() * horizon - horizon/2, Math.random() * horizon + horizon/2, 20);
-
-            poly.rotation.x = Math.PI /2;
-
-            poly.spinX = 0;
-            poly.spinY = 0;
-            poly.modX = 0;
-            poly.modY = 0;
-
-            polys.push(poly);
-            scene.add( poly );
-
+        for(let i = 0; i < totalcubes; i++){
+            cubesLeft[i] = cube.clone();
+                cubesLeft[i].position.x = -150;
+            cubesLeft[i].position.y = cube.position.y + cubeSize/2*i;
+            scene.add( cubesLeft[i] );
         }
 
     }
-
 
 
     this.draw = function() {
 
-            if (!paused) {
+        fourier.analyze()
+        let amp = fourier.getEnergy(20, 200)
 
-                for(var i = 0; i < polys.length; i++){
-                    var poly = polys[i];
-                    poly.rotation.x += poly.spinX;
-                    poly.rotation.y += poly.spinY;
-                    poly.position.x += poly.modX;
-                    poly.position.y += - speed  - poly.modY;
+        if (!paused) {
 
-                    if(poly.position.y < camera.position.y){
-                        polys[i].position.x = Math.random() * horizon - horizon/2;
-                        polys[i].position.y = horizon;
+            for(var i = 0; i < cubesRight.length; i++){
+                var cubeR = cubesRight[i];
+                var cubeL = cubesLeft[i];
+
+                if(cubeR.position.y < -400 ){
+                    if(i === 0 ){
+                        cubeR.position.y = cubesRight[cubesRight.length-1].position.y + cubeSize/2;
+                        cubeL.position.y = cubesLeft[cubesLeft.length-1].position.y + cubeSize/2;
+                    } else {
+                        cubeR.position.y = cubesRight[i-1].position.y + cubeSize/2;
+                        cubeR.scale.z = 1;
+                        cubeL.position.y = cubesLeft[i-1].position.y + cubeSize/2;
+                        cubeL.scale.z = 1;
                     }
-
                 }
 
-                if(planes[0].position.y < - horizon ){
-                    planes[0].position.y = planes[2].position.y + horizon;
+                cubeR.position.y +=- speed ;
+                cubeL.position.y +=- speed ;
+
+                if(cubeR.position.y <= 120 && cubeR.position.y > -120){
+                    cubeR.scale.z = amp*0.075;
                 }
-
-                if(planes[1].position.y < - horizon ){
-                    planes[1].position.y = planes[0].position.y + horizon;
+                if(cubeL.position.y <= 120 && cubeL.position.y > -120){
+                    cubeL.scale.z = amp*0.075;
                 }
-
-                if(planes[2].position.y < - horizon ){
-                    planes[2].position.y = planes[1].position.y + horizon;
-                }
-
-                planes[0].position.y +=- speed ;
-                planes[1].position.y +=- speed ;
-                planes[2].position.y +=- speed ;
-
             }
 
-            moveCamera( Date.now() - time );
 
-            render();
+            if(planes[0].position.y < - horizon ){
+                planes[0].position.y = planes[2].position.y + horizon;
+            }
 
-            time = Date.now();
+            if(planes[1].position.y < - horizon ){
+                planes[1].position.y = planes[0].position.y + horizon;
+            }
+
+            if(planes[2].position.y < - horizon ){
+                planes[2].position.y = planes[1].position.y + horizon;
+            }
+
+            planes[0].position.y +=- speed ;
+            planes[1].position.y +=- speed ;
+            planes[2].position.y +=- speed ;
+
+        }
+
+        moveCamera( Date.now() - time );
+
+        render();
+
+        time = Date.now();
+
+        // window.requestAnimationFrame(animate);
 
     }
-
-
 
     function onWindowResize() {
 
@@ -379,24 +333,14 @@ function ThreeDSpaceRocket(){
     }
 
     function render() {
-        // camera.position.x = self.panePARAMS.camera.x;
-        // camera.position.y = self.panePARAMS.camera.y;
-        // camera.position.z = self.panePARAMS.camera.z;
-        //
-        // camera.rotation.x = self.panePARAMS.camRotation.x
-        // camera.rotation.y = self.panePARAMS.camRotation.y
-        // camera.rotation.z = self.panePARAMS.camRotation.z
-
-        // controls.update();
 
         const time = - performance.now() / 1000;
         for ( let i = 0; i < wheels.length; i ++ ) {
-            wheels[ i ].rotation.x = time * Math.PI * 2;
+            wheels[ i ].rotation.x = speed * time * Math.PI * 2;
         }
 
-        grid.position.y = + ( time ) % 1;
+        controls.update();
         renderer.render( scene, camera );
-        stats.update();
     }
 
 
@@ -415,6 +359,25 @@ function ThreeDSpaceRocket(){
 
     }
 
+
+    function onOrientation(event){
+        /*
+                    alpha = event.alpha
+                    beta = event.beta;
+                    gamma = event.gamma;
+
+                    if( beta > 5){
+                        moveRight = false;
+                        moveLeft = true;
+                    } else if(beta < -5){
+                        moveLeft = false;
+                        moveRight = true;
+                    } else {
+                        moveLeft = false;
+                        moveRight = false;
+                    }
+        */
+    }
 
     function onTouchStart(event){
 
@@ -463,6 +426,8 @@ function ThreeDSpaceRocket(){
         }
 
     }
+
+
 
 
 }

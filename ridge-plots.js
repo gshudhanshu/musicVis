@@ -9,7 +9,8 @@ function RidgePlots(){
         speed: 0.7,
         lineGap: 30,
         smallScale:5,
-        bigScale:50
+        bigScale:50,
+        ampFactor: 3
 	}
     
     this.addPaneGui = function() {
@@ -39,6 +40,12 @@ function RidgePlots(){
             min: 5,
             max: 60,
             step: 1
+        });
+
+        arcLines.addInput(this.panePARAMS, 'ampFactor', {
+            min: 1,
+            max: 7,
+            step: 0.5
         });
 
     }
@@ -107,8 +114,8 @@ this.addWave = function(){
             beginShape();
             for(var j = 0; j<o.length; j++){
                 o[j].radius +=this.panePARAMS.speed
-                o[j].x = startX+(o[j].radius+o[j].waveVal)*cos(o[j].degree+180);
-                o[j].y = startY+(o[j].radius+o[j].waveVal)*sin(o[j].degree+180);
+                o[j].x = startX+(o[j].radius+o[j].waveVal*this.panePARAMS.ampFactor)*cos(o[j].degree+180);
+                o[j].y = startY+(o[j].radius+o[j].waveVal*this.panePARAMS.ampFactor)*sin(o[j].degree+180);
                 degree +=1
                 vertex(o[j].x, o[j].y);
             }
