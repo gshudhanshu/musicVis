@@ -258,8 +258,6 @@ function ThreeDSpaceRocket(){
         camera.position.y = self.panePARAMS.camera.y;
         camera.position.z = self.panePARAMS.camera.z;
 
-        console.log(camera.rotation)
-
         camera.rotation.x = self.panePARAMS.camRotation.x
         camera.rotation.y = self.panePARAMS.camRotation.y
         camera.rotation.z = self.panePARAMS.camRotation.z
