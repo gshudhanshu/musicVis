@@ -12,7 +12,8 @@ function ReactiveCircles() {
         color6: '#0000ff',
         color7: '#33ccff',
         color8: '#00ff00',
-        particleThreshold: 190
+        particleThreshold: 190,
+        ampThreshold: 190
     }
 
     this.addPaneGui = function (pane) {
@@ -21,6 +22,10 @@ function ReactiveCircles() {
         });
 
         paneFolder.addInput(this.panePARAMS, 'particleThreshold', {
+            min: 100,
+            max: 250,
+        });
+        paneFolder.addInput(this.panePARAMS, 'ampThreshold', {
             min: 100,
             max: 250,
         });
@@ -75,7 +80,7 @@ function ReactiveCircles() {
 
         push()
         translate(width/2, height/2)
-        if(amp>190) {
+        if(amp>this.panePARAMS.ampThreshold) {
             rotate(random(-2, 2))
         }
         image(bgImg, 0, 0, width + 100, height + 100)
@@ -99,7 +104,7 @@ function ReactiveCircles() {
 
         for(var w = colors.length-1; w >= 0; w--) {
 
-            if(amp>190){
+            if(amp>this.panePARAMS.ampThreshold){
                 multi = exponents[w]
             } else {
                 multi = 1

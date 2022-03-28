@@ -9,7 +9,7 @@ import {createMultiMaterialObject} from "./lib/utils/SceneUtils.js";
 
 function ThreeDSpaceRocket(){
 
-    this.name = "3D Car & Cuboid";
+    this.name = "3D Car & Cuboids";
     this.panePARAMS = {
         name: this.name,
         // camera: {x: 0, y: -500, z: 20},
@@ -112,28 +112,9 @@ function ThreeDSpaceRocket(){
             color: 0xffffff, metalness: 0.25, roughness: 0, transmission: 1.0
         } );
 
-        // const bodyColorInput = document.getElementById( 'body-color' );
-        // bodyColorInput.addEventListener( 'input', function () {
-        //
-        //     bodyMaterial.color.set( this.value );
-        //
-        // } );
-        //
-        // const detailsColorInput = document.getElementById( 'details-color' );
-        // detailsColorInput.addEventListener( 'input', function () {
-        //
-        //     detailsMaterial.color.set( this.value );
-        //
-        // } );
-        //
-        // const glassColorInput = document.getElementById( 'glass-color' );
-        // glassColorInput.addEventListener( 'input', function () {
-        //
-        //     glassMaterial.color.set( this.value );
-        //
-        // } );
-
         // Car
+        // Used 3D car template
+        // https://threejs.org/examples/?q=car#webgl_materials_car
 
         const shadow = new THREE.TextureLoader().load( 'assets/models/ferrari_ao.png' );
 
