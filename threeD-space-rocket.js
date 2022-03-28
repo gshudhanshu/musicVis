@@ -1,3 +1,12 @@
+//Importing modules
+import * as THREE from 'three';
+import Stats from './lib/stats.module.js';
+import { OrbitControls } from './lib/OrbitControls.js';
+import { GLTFLoader } from './lib/GLTFLoader.js';
+import { DRACOLoader } from './lib/DRACOLoader.js';
+import { RGBELoader } from './lib/RGBELoader.js';
+
+
 function ThreeDSpaceRocket(){
 
     this.name = "ThreeDSpaceRocket";
@@ -32,15 +41,16 @@ function ThreeDSpaceRocket(){
 
     this.setup = function() {
 
-
-
     }
-
 
 
     var camera, scene, renderer;
 
     var polys, planes;
+
+    var stats, controls, grid;
+
+    const wheels = [];
 
     var paused = false;
     var speed = 10;
@@ -59,15 +69,27 @@ function ThreeDSpaceRocket(){
 
     function init(){
 
-        renderer = new THREE.WebGLRenderer( { antialias: false } );
+        const container = document.getElementById( 'threeJsContainer' );
+
+        renderer = new THREE.WebGLRenderer( { antialias: true } );
         renderer.domElement.id = 'threeJsCanvas';
 
+        renderer.setPixelRatio( window.devicePixelRatio );
         renderer.setSize( window.innerWidth, window.innerHeight );
 
-        // document.body.appendChild(renderer.domElement);
+        renderer.setAnimationLoop( render );
+        renderer.outputEncoding = THREE.sRGBEncoding;
+        renderer.toneMapping = THREE.ACESFilmicToneMapping;
+        renderer.toneMappingExposure = 0.85;
 
-        let p5Canvas = document.getElementsByClassName("p5Canvas")[0];
-        p5Canvas.before(renderer.domElement);
+        // let p5Canvas = document.getElementsByClassName("p5Canvas")[0];
+        // p5Canvas.before(renderer.domElement);
+        // const threeJsCanvas = renderer.domElement;
+
+        container.appendChild( renderer.domElement );
+
+        stats = new Stats();
+        container.appendChild( stats.dom );
 
         renderer.setClearColor(0x000000, 1.0);
 
@@ -79,23 +101,121 @@ function ThreeDSpaceRocket(){
 
         camera.lookAt(new THREE.Vector3(0,0,0));
 
+        controls = new OrbitControls( camera, container );
+        controls.enableDamping = true;
+        controls.maxDistance = 9;
+        controls.target.set( 0, 0.5, 0 );
+        controls.update();
+
         scene = new THREE.Scene();
-        scene.fog = new THREE.FogExp2( renderer.getClearColor(), 0.0005 );
+        scene.background = new THREE.Color( 0x333333 );
+        scene.environment = new RGBELoader().load( './assets/textures/venice_sunset_1k.hdr' );
+        scene.environment.mapping = THREE.EquirectangularReflectionMapping;
+        scene.fog = new THREE.Fog( 0x333333, 10, 15 );
 
-        addPlanes();
+        // scene = new THREE.Scene();
+        // scene.fog = new THREE.FogExp2( renderer.getClearColor(), 0.0005 );
+        // addPlanes();
+        // addPolys();
 
-        addPolys();
+        grid = new THREE.GridHelper( 20, 40, 0xffffff, 0xffffff );
+        grid.material.opacity = 0.2;
+        grid.material.depthWrite = false;
+        grid.material.transparent = true;
+        scene.add( grid );
 
 
-        window.addEventListener( 'resize', onWindowResize, false );
-        window.addEventListener('keydown', onKeyDown, false);
-        window.addEventListener('keyup', onKeyUp, false);
-        window.addEventListener('touchstart', onTouchStart, false);
-        window.addEventListener('touchend', onTouchEnd, false);
-        window.addEventListener('mousedown', onTouchStart, false);
-        window.addEventListener('mouseup', onTouchEnd, false);
-        window.addEventListener('touchmove', onTouchEnd, false);
-        window.addEventListener('deviceorientation', onOrientation, false);
+        //Materials
+        const bodyMaterial = new THREE.MeshPhysicalMaterial( {
+            color: 0xff0000, metalness: 1.0, roughness: 0.5, clearcoat: 1.0, clearcoatRoughness: 0.03, sheen: 0.5
+        } );
+
+        const detailsMaterial = new THREE.MeshStandardMaterial( {
+            color: 0xffffff, metalness: 1.0, roughness: 0.5
+        } );
+
+        const glassMaterial = new THREE.MeshPhysicalMaterial( {
+            color: 0xffffff, metalness: 0.25, roughness: 0, transmission: 1.0
+        } );
+
+        const bodyColorInput = document.getElementById( 'body-color' );
+        bodyColorInput.addEventListener( 'input', function () {
+
+            bodyMaterial.color.set( this.value );
+
+        } );
+
+        const detailsColorInput = document.getElementById( 'details-color' );
+        detailsColorInput.addEventListener( 'input', function () {
+
+            detailsMaterial.color.set( this.value );
+
+        } );
+
+        const glassColorInput = document.getElementById( 'glass-color' );
+        glassColorInput.addEventListener( 'input', function () {
+
+            glassMaterial.color.set( this.value );
+
+        } );
+
+        // Car
+
+        const shadow = new THREE.TextureLoader().load( 'assets/models/ferrari_ao.png' );
+
+        const dracoLoader = new DRACOLoader();
+        dracoLoader.setDecoderPath( 'lib/draco/gltf/' );
+
+        const loader = new GLTFLoader();
+        loader.setDRACOLoader( dracoLoader );
+
+        loader.load( 'assets/models/ferrari.glb', function ( gltf ) {
+
+            const carModel = gltf.scene.children[ 0 ];
+
+            carModel.getObjectByName( 'body' ).material = bodyMaterial;
+
+            carModel.getObjectByName( 'rim_fl' ).material = detailsMaterial;
+            carModel.getObjectByName( 'rim_fr' ).material = detailsMaterial;
+            carModel.getObjectByName( 'rim_rr' ).material = detailsMaterial;
+            carModel.getObjectByName( 'rim_rl' ).material = detailsMaterial;
+            carModel.getObjectByName( 'trim' ).material = detailsMaterial;
+
+            carModel.getObjectByName( 'glass' ).material = glassMaterial;
+
+            wheels.push(
+                carModel.getObjectByName( 'wheel_fl' ),
+                carModel.getObjectByName( 'wheel_fr' ),
+                carModel.getObjectByName( 'wheel_rl' ),
+                carModel.getObjectByName( 'wheel_rr' )
+            );
+
+            // shadow
+            const mesh = new THREE.Mesh(
+                new THREE.PlaneGeometry( 0.655 * 4, 1.3 * 4 ),
+                new THREE.MeshBasicMaterial( {
+                    map: shadow, blending: THREE.MultiplyBlending, toneMapped: false, transparent: true
+                } )
+            );
+            mesh.rotation.x = - Math.PI / 2;
+            mesh.renderOrder = 2;
+            carModel.add( mesh );
+
+            scene.add( carModel );
+
+        } );
+
+
+
+        // window.addEventListener( 'resize', onWindowResize, false );
+        // window.addEventListener('keydown', onKeyDown, false);
+        // window.addEventListener('keyup', onKeyUp, false);
+        // window.addEventListener('touchstart', onTouchStart, false);
+        // window.addEventListener('touchend', onTouchEnd, false);
+        // window.addEventListener('mousedown', onTouchStart, false);
+        // window.addEventListener('mouseup', onTouchEnd, false);
+        // window.addEventListener('touchmove', onTouchEnd, false);
+        // window.addEventListener('deviceorientation', onOrientation, false);
 
 
     }
@@ -254,15 +374,27 @@ function ThreeDSpaceRocket(){
     }
 
     function render() {
-        camera.position.x = self.panePARAMS.camera.x;
-        camera.position.y = self.panePARAMS.camera.y;
-        camera.position.z = self.panePARAMS.camera.z;
+        // camera.position.x = self.panePARAMS.camera.x;
+        // camera.position.y = self.panePARAMS.camera.y;
+        // camera.position.z = self.panePARAMS.camera.z;
+        //
+        // camera.rotation.x = self.panePARAMS.camRotation.x
+        // camera.rotation.y = self.panePARAMS.camRotation.y
+        // camera.rotation.z = self.panePARAMS.camRotation.z
 
-        camera.rotation.x = self.panePARAMS.camRotation.x
-        camera.rotation.y = self.panePARAMS.camRotation.y
-        camera.rotation.z = self.panePARAMS.camRotation.z
+        controls.update();
 
+        const time = - performance.now() / 1000;
+        for ( let i = 0; i < wheels.length; i ++ ) {
+            wheels[ i ].rotation.x = time * Math.PI * 2;
+        }
+
+        grid.position.z = - ( time ) % 1;
         renderer.render( scene, camera );
+        stats.update();
+
+
+        // renderer.render( scene, camera );
     }
 
 
@@ -350,6 +482,6 @@ function ThreeDSpaceRocket(){
     }
 
 
-
-
 }
+
+window.ThreeDSpaceRocket = ThreeDSpaceRocket;

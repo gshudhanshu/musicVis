@@ -1,4 +1,3 @@
-//global for the controls and input 
 var controls = null;
 //store visualisations in a container
 var vis = null;
@@ -10,6 +9,7 @@ var fourier, compressor;
 var currentMusic = 0;
 
 var pane, paneFolder;
+
 
 var musicPlaylist = [
 	{path: 'assets/stomper_reggae_bit.mp3',
@@ -29,7 +29,6 @@ var musicPlaylist = [
 		title: 'Unconditional Breakup Mashup 2022',
 		composer: 'comp1', length: '3:41'}	
 ]
-
 
 
 function preload(){

@@ -13,13 +13,30 @@
   <script src="lib/p5.easycam.min.js"></script>
   <script src="lib/p5.sound.js"></script>
 <!--  <script src="lib/three.min.js"></script>-->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r58/three.min.js"></script>
-<!--  <script src="lib/three.module.js"></script>-->
+<!--  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r58/three.min.js"></script>-->
   <script src="lib/dat.gui.js"></script>
   <script src="lib/tweakpane-3.0.7.js"></script>
   <script src="lib/quicksettings.js"></script>
   <script src="lib/p5.dom.js"></script>
   <script src="lib/p5.gui.js"></script>
+
+  <script async src="lib/es-module-shims.js"></script>
+
+  <script type="importmap">
+        {
+            "imports": {
+                "three": "./lib/three.module.js"
+             }
+        }
+    </script>
+
+<!--  <script type="module" src="lib/three.module.js"></script>-->
+<!--      <script type="module" src="lib/stats.module.js"></script>-->
+<!--      <script type="module" src="lib/OrbitControls.js"></script>-->
+<!--      <script type="module" src="lib/GLTFLoader.js"></script>-->
+<!--      <script type="module" src="lib/DRACOLoader.js"></script>-->
+<!--      <script type="module" src="lib/RGBELoader.js"></script>-->
+
 
   <script src="sketch.js"></script>
   <script src="controlsAndInput.js"></script>
@@ -31,7 +48,9 @@
   <script src="ridge-plots.js"></script>
   <script src="circle-line.js"></script>
   <script src="reactive-circles.js"></script>
-  <script src="threeD-space-rocket.js"></script>
+  <script type="module" src="threeD-space-rocket.js"></script>
+
+
 
 </head>
 <body>
@@ -107,6 +126,11 @@
   </div>
 </section>
 
+<div id="threeJsContainer">
+
+</div>
+
 <script src="playerGUI.js"></script>
+
 </body>
 </html>
