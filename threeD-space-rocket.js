@@ -9,7 +9,7 @@ import {createMultiMaterialObject} from "./lib/utils/SceneUtils.js";
 
 function ThreeDSpaceRocket(){
 
-    this.name = "ThreeDSpaceRocket";
+    this.name = "3D Car & Cuboid";
     this.panePARAMS = {
         name: this.name,
         // camera: {x: 0, y: -500, z: 20},
