@@ -25,11 +25,12 @@ function ControlsAndInput(){
 
 		if(keycode > 48 && keycode < 58){
 			var visNumber = keycode - 49;
-			vis.selectVisual(vis.visuals[visNumber].name); 
 
 			if(paneFolder){
 				vis.selectedVisual.removePaneGui(pane);
 			}
+
+			vis.selectVisual(vis.visuals[visNumber].name);
 			vis.selectedVisual.addPaneGui(pane);
 		}
 	};

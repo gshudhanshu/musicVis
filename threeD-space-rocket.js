@@ -5,7 +5,7 @@ import { OrbitControls } from './lib/OrbitControls.js';
 import { GLTFLoader } from './lib/GLTFLoader.js';
 import { DRACOLoader } from './lib/DRACOLoader.js';
 import { RGBELoader } from './lib/RGBELoader.js';
-
+import {createMultiMaterialObject} from "./lib/utils/SceneUtils.js";
 
 function ThreeDSpaceRocket(){
 
@@ -36,11 +36,9 @@ function ThreeDSpaceRocket(){
 
     this.removePaneGui = function(){
         paneFolder.dispose();
-        // document.getElementById('threeJsCanvas').remove();
     }
 
     this.setup = function() {
-
     }
 
 
@@ -65,8 +63,7 @@ function ThreeDSpaceRocket(){
 
     var self = this
 
-    init();
-
+    init()
     function init(){
 
         const container = document.getElementById( 'threeJsContainer' );
@@ -77,7 +74,7 @@ function ThreeDSpaceRocket(){
         renderer.setPixelRatio( window.devicePixelRatio );
         renderer.setSize( window.innerWidth, window.innerHeight );
 
-        renderer.setAnimationLoop( render );
+        // renderer.setAnimationLoop( render );
         renderer.outputEncoding = THREE.sRGBEncoding;
         renderer.toneMapping = THREE.ACESFilmicToneMapping;
         renderer.toneMappingExposure = 0.85;
@@ -95,9 +92,9 @@ function ThreeDSpaceRocket(){
 
         camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, horizon);
 
-        camera.position.x = self.panePARAMS.camera.x;
-        camera.position.y = self.panePARAMS.camera.y;
-        camera.position.z = self.panePARAMS.camera.z;
+        // camera.position.x = self.panePARAMS.camera.x;
+        // camera.position.y = self.panePARAMS.camera.y;
+        // camera.position.z = self.panePARAMS.camera.z;
 
         camera.lookAt(new THREE.Vector3(0,0,0));
 
@@ -115,8 +112,9 @@ function ThreeDSpaceRocket(){
 
         // scene = new THREE.Scene();
         // scene.fog = new THREE.FogExp2( renderer.getClearColor(), 0.0005 );
-        // addPlanes();
-        // addPolys();
+        scene.fog = new THREE.FogExp2( 0x000000, 0.0005 );
+        addPlanes();
+        addPolys();
 
         grid = new THREE.GridHelper( 20, 40, 0xffffff, 0xffffff );
         grid.material.opacity = 0.2;
@@ -138,26 +136,26 @@ function ThreeDSpaceRocket(){
             color: 0xffffff, metalness: 0.25, roughness: 0, transmission: 1.0
         } );
 
-        const bodyColorInput = document.getElementById( 'body-color' );
-        bodyColorInput.addEventListener( 'input', function () {
-
-            bodyMaterial.color.set( this.value );
-
-        } );
-
-        const detailsColorInput = document.getElementById( 'details-color' );
-        detailsColorInput.addEventListener( 'input', function () {
-
-            detailsMaterial.color.set( this.value );
-
-        } );
-
-        const glassColorInput = document.getElementById( 'glass-color' );
-        glassColorInput.addEventListener( 'input', function () {
-
-            glassMaterial.color.set( this.value );
-
-        } );
+        // const bodyColorInput = document.getElementById( 'body-color' );
+        // bodyColorInput.addEventListener( 'input', function () {
+        //
+        //     bodyMaterial.color.set( this.value );
+        //
+        // } );
+        //
+        // const detailsColorInput = document.getElementById( 'details-color' );
+        // detailsColorInput.addEventListener( 'input', function () {
+        //
+        //     detailsMaterial.color.set( this.value );
+        //
+        // } );
+        //
+        // const glassColorInput = document.getElementById( 'glass-color' );
+        // glassColorInput.addEventListener( 'input', function () {
+        //
+        //     glassMaterial.color.set( this.value );
+        //
+        // } );
 
         // Car
 
@@ -252,17 +250,17 @@ function ThreeDSpaceRocket(){
 
         var darkMaterial = new THREE.MeshBasicMaterial( { color: 0x000000, transparent: true, opacity: 0.5 } );
 
-        var cube = THREE.SceneUtils.createMultiMaterialObject(
-            new THREE.CubeGeometry(30, 30, 30),
+        var cube = createMultiMaterialObject(
+            new THREE.BoxGeometry(30,30,30),
             [darkMaterial, new THREE.MeshBasicMaterial( { color: 0xCF0505, wireframe: true, wireframeLinewidth: 3} )]
         );
 
-        var tetra = THREE.SceneUtils.createMultiMaterialObject(
+        var tetra = createMultiMaterialObject(
             new THREE.TetrahedronGeometry( 15, 0),
             [darkMaterial, new THREE.MeshBasicMaterial( { color: 0xF6790B, wireframe: true, wireframeLinewidth: 3} )]
         );
 
-        var octa = THREE.SceneUtils.createMultiMaterialObject(
+        var octa = createMultiMaterialObject(
             new THREE.OctahedronGeometry( 10, 0),
             [darkMaterial, new THREE.MeshBasicMaterial( { color: 0x17C2EA, wireframe: true, wireframeLinewidth: 3} )]
         );
@@ -294,7 +292,7 @@ function ThreeDSpaceRocket(){
 
         for(var i = 0; i < 10; i++){
 
-            poly = THREE.SceneUtils.createMultiMaterialObject(
+            poly = createMultiMaterialObject(
                 new THREE.CylinderGeometry( 0, 30, 100, 20, 4 ),
                 [darkMaterial, new THREE.MeshBasicMaterial( { color: 0xCDF346, wireframe: true, wireframeLinewidth: 3} )]
             );
@@ -392,9 +390,6 @@ function ThreeDSpaceRocket(){
         grid.position.z = - ( time ) % 1;
         renderer.render( scene, camera );
         stats.update();
-
-
-        // renderer.render( scene, camera );
     }
 
 
@@ -413,25 +408,6 @@ function ThreeDSpaceRocket(){
 
     }
 
-
-    function onOrientation(event){
-        /*
-                    alpha = event.alpha
-                    beta = event.beta;
-                    gamma = event.gamma;
-
-                    if( beta > 5){
-                        moveRight = false;
-                        moveLeft = true;
-                    } else if(beta < -5){
-                        moveLeft = false;
-                        moveRight = true;
-                    } else {
-                        moveLeft = false;
-                        moveRight = false;
-                    }
-        */
-    }
 
     function onTouchStart(event){
 

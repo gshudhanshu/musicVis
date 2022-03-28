@@ -66,6 +66,7 @@ function setup(){
 	 vis.add(new ReactiveCircles());
 	 vis.add(new ThreeDSpaceRocket());
 
+	 console.log(vis)
 
 	//  DAT GUI
 	pane = new Tweakpane.Pane();
@@ -78,6 +79,12 @@ function setup(){
 
 function draw(){
 	background(0);
+
+	if(vis.selectedVisual.name === "ThreeDSpaceRocket"){
+		document.getElementById('threeJsContainer').style.display = 'block';
+	} else {
+		document.getElementById('threeJsContainer').style.display = 'none';
+	}
 
 	//draw the selected visualisation
 	vis.selectedVisual.draw();
