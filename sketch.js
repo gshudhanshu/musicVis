@@ -12,22 +12,54 @@ var pane, paneFolder;
 
 
 var musicPlaylist = [
-	{path: 'assets/stomper_reggae_bit.mp3',
-		thumb: 'assets/thumb/thumb.jpg',
+	{path: 'assets/music/stomper_reggae_bit.mp3',
+		thumb: 'assets/music/thumb/thumb.jpg',
 		title: 'Stomper Reggae Bit',
-		composer: 'comp1', length: '1:28'},
-	{path: 'assets/Christmas Magic - AShamaluevMusic.mp3',
-		thumb: 'assets/thumb/thumb.jpg',
-		title: 'Christmas Magic',
-		composer: 'comp1', length: '3:41'},
-	{path: 'assets/Jo Bheji Thi Dua Remix 2022 - DJ Shadow Dubai(DJSathi).mp3',
-		thumb: 'assets/thumb/thumb.jpg',
-		title: 'Jo Bheji Thi Dua Remix 2022',
-		composer: 'comp1', length: '3:41'},
-	{path: 'assets/Unconditional Breakup Mashup 2022 - Aftermorning(DJSathi).mp3',
-		thumb: 'assets/thumb/thumb.jpg',
-		title: 'Unconditional Breakup Mashup 2022',
-		composer: 'comp1', length: '3:41'}	
+		composer: 'Unknown', length: '1:28'},
+	{path: 'assets/music/Andromedik - Let Me In [NCS Release].mp3',
+		thumb: 'assets/music/thumb/Andromedik - Let Me In [NCS Release].jpg',
+		title: 'Let Me In [NCS Release]',
+		composer: 'Andromedik', length: '3:48'},
+
+	{path: 'assets/music/Andromedik - SHE [NCS Release].mp3',
+		thumb: 'assets/music/thumb/Andromedik - SHE [NCS Release].jpg',
+		title: 'SHE [NCS Release]',
+		composer: 'Andromedik', length: '1:28'},
+
+	{path: 'assets/music/Defqwop - Say The Word (feat. The Ruins) [NCS Release].mp3',
+		thumb: 'assets/music/thumb/Defqwop - Say The Word (feat. The Ruins) [NCS Release].jpg',
+		title: 'Say The Word (feat. The Ruins) [NCS Release]',
+		composer: 'Defqwop', length: '1:28'},
+
+	{path: 'assets/music/Different Heaven - Nekozilla (LFZ Remix) [NCS Release].mp3',
+		thumb: 'assets/music/thumb/Different Heaven - Nekozilla (LFZ Remix) [NCS Release].jpg',
+		title: 'Nekozilla (LFZ Remix) [NCS Release]',
+		composer: 'Heaven', length: '1:28'},
+
+	{path: 'assets/music/Jim Yosef - Firefly [NCS Release].mp3',
+		thumb: 'assets/music/thumb/Jim Yosef - Firefly [NCS Release].jpg',
+		title: 'Firefly [NCS Release]',
+		composer: 'Jim Yosef', length: '1:28'},
+
+	{path: 'assets/music/Jim Yosef & Anna Yvette - Courage [NCS Release].mp3',
+		thumb: 'assets/music/thumb/Jim Yosef & Anna Yvette - Courage [NCS Release].jpg',
+		title: 'Courage [NCS Release]',
+		composer: 'Jim Yosef & Anna Yvette', length: '1:28'},
+
+	{path: 'assets/music/Jim Yosef - Link.mp3',
+		thumb: 'assets/music/thumb/Jim Yosef - Link.jpg',
+		title: 'Link',
+		composer: 'Jim Yosef', length: '1:28'},
+
+	{path: 'assets/music/NIVIRO - The Return [NCS Release].mp3',
+		thumb: 'assets/music/thumb/NIVIRO - The Return [NCS Release].jpg',
+		title: 'The Return [NCS Release]',
+		composer: 'NIVIRO', length: '1:28'},
+
+	{path: 'assets/music/Tobu - Candyland.mp3',
+		thumb: 'assets/music/thumb/Tobu - Candyland.jpg',
+		title: 'Candyland',
+		composer: 'Tobu', length: '1:28'},
 ]
 
 
@@ -55,6 +87,7 @@ function setup(){
 	 fourier = new p5.FFT();
 
 	 sound = soundArr[currentMusic];
+
 	 controls = new ControlsAndInput();
 
 
@@ -66,7 +99,6 @@ function setup(){
 	 vis.add(new ReactiveCircles());
 	 vis.add(new ThreeDSpaceRocket());
 
-	 console.log(vis)
 
 	//  DAT GUI
 	pane = new Tweakpane.Pane();
@@ -80,7 +112,7 @@ function setup(){
 function draw(){
 	background(0);
 
-	if(vis.selectedVisual.name === "ThreeDSpaceRocket"){
+	if(vis.selectedVisual.name === "3D Car & Cuboids"){
 		document.getElementById('threeJsContainer').style.display = 'block';
 	} else {
 		document.getElementById('threeJsContainer').style.display = 'none';

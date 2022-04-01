@@ -6,10 +6,9 @@ function CircleLine(){
         ellipseSize: 200,
         scale:1,
         particleSize: 10,
-        // lowFreqColor: 'hsla(0, 0, 100, 1)',
-        // highFreqColor: {h: 255, s:100, v: 100, a:1}
     }
 
+    //tweakpane GUI
     this.addPaneGui = function(pane) {
         paneFolder = pane.addFolder({
             title: this.panePARAMS.name,
@@ -25,10 +24,9 @@ function CircleLine(){
             max: 25,
             step: 1
         });
-        // paneFolder.addInput(this.panePARAMS, 'lowFreqColor');
-        // paneFolder.addInput(this.panePARAMS, 'highFreqColor');
     }
 
+    //Remove tweakpane GUI
     this.removePaneGui = function(){
         paneFolder.dispose();
     }
@@ -43,6 +41,7 @@ function CircleLine(){
 
     this.setup = function() {   }
 
+    // Draw function similar to P5.js
     this.draw = function(){
         colorMode(HSB, 360,100,100)
 

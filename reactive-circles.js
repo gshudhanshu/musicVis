@@ -16,6 +16,7 @@ function ReactiveCircles() {
         ampThreshold: 190
     }
 
+    //tweakpane GUI
     this.addPaneGui = function (pane) {
         paneFolder = pane.addFolder({
             title: this.panePARAMS.name,
@@ -41,6 +42,7 @@ function ReactiveCircles() {
 
     }
 
+    //Remove tweakpane GUI
     this.removePaneGui = function(){
         paneFolder.dispose();
     }
@@ -65,6 +67,7 @@ function ReactiveCircles() {
         rectMode(CENTER)
     }
 
+    // Draw function similar to P5.js
     this.draw = function () {
 
         colors = [this.panePARAMS.color1, this.panePARAMS.color2, this.panePARAMS.color3,
@@ -149,6 +152,7 @@ function ReactiveCircles() {
         pop()
     }
 
+    //Class for creating small circle particles
     class Particle{
         constructor() {
             this.pos = p5.Vector.random2D().mult(250)

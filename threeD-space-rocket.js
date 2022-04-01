@@ -12,8 +12,8 @@ function ThreeDSpaceRocket(){
     this.name = "3D Car & Cuboids";
     this.panePARAMS = {
         name: this.name,
-        // camera: {x: 0, y: -500, z: 20},
-        // camRotation: {x: 1.5308176374382183, y: 0, z: 0},
+        lowAmpColor: 0xff0055,
+        highAmpColor: 0x0088ff
     }
 
     this.addPaneGui = function(pane) {
@@ -21,15 +21,12 @@ function ThreeDSpaceRocket(){
             title: this.panePARAMS.name,
         });
 
-        paneFolder.addInput(this.panePARAMS, 'carColor', {
+        paneFolder.addInput(this.panePARAMS, 'lowAmpColor', {
             view: 'color',
         });
-        paneFolder.addInput(this.panePARAMS, 'camRotation', {
-            x: {min: -Math.PI, max: Math.PI},
-            y: {min: -Math.PI, max: Math.PI},
-            z: {min: -Math.PI, max: Math.PI},
+        paneFolder.addInput(this.panePARAMS, 'highAmpColor', {
+            view: 'color',
         });
-
     }
 
     this.removePaneGui = function(){
@@ -39,6 +36,7 @@ function ThreeDSpaceRocket(){
     this.setup = function() {
     }
 
+    var self = this
 
     var camera, scene, renderer;
 
@@ -179,10 +177,14 @@ function ThreeDSpaceRocket(){
 
     }
 
+    //Adding planes
     function addPlanes(){
 
         planes = [];
         var planeSegments = 60;
+
+        var material = new THREE.MeshLambertMaterial({color:0xff0000,opacity:0.2,transparent:true,overdraw:0.5});
+
 
         var plane = new THREE.Mesh(
             new THREE.PlaneGeometry(horizon, horizon, planeSegments, planeSegments),
@@ -204,22 +206,22 @@ function ThreeDSpaceRocket(){
 
     }
 
+    // Adding cuboids
     var cubesLeft, cubesRight, cube;
     var cubeSize;
     function addPolys(){
 
-        var darkMaterial = new THREE.MeshBasicMaterial( { color: 0x000000, transparent: false, opacity: 0.5 } );
+        const material = new THREE.MeshStandardMaterial({color: self.panePARAMS.lowAmpColor})
+        const boxGeometry = new THREE.BoxGeometry(40,40,5)
 
-        var totalcubes = 200;
+        var totalcubes = 300;
         cubesRight = [];
         cubesLeft = [];
         cubeSize =  40;
-        cube = createMultiMaterialObject(
-            new THREE.BoxGeometry(cubeSize,cubeSize,10),
-            [darkMaterial, new THREE.MeshBasicMaterial( { color: 0xCF0505, wireframe: true, wireframeLinewidth: 3} )]
-        );
 
-        cube.position.set(150, 0, 20);
+        const cube = new THREE.Mesh(boxGeometry, material)
+        cube.position.set(150, 0, 0);
+        boxGeometry.translate(0,0,2.5)
 
         for(let i = 0; i < totalcubes; i++){
             cubesRight[i] = cube.clone();
@@ -229,7 +231,7 @@ function ThreeDSpaceRocket(){
             scene.add( cubesRight[i] );
         }
 
-        cube.position.set(-150, 0, 20);
+        cube.position.set(-150, 0, 0);
 
         for(let i = 0; i < totalcubes; i++){
             cubesLeft[i] = cube.clone();
@@ -240,11 +242,21 @@ function ThreeDSpaceRocket(){
 
     }
 
-
+    //Draw function similar to p5js
     this.draw = function() {
 
         fourier.analyze()
-        let amp = fourier.getEnergy(20, 200)
+        // let amp = fourier.getEnergy(20, 140);
+        // if(amp >= 240) {amp += amp*1.5-amp}
+        let amp1 = fourier.getEnergy("bass");
+        // if(amp1 >= 252) {amp1 = amp1*1.15}
+        let amp2 = fourier.getEnergy("lowMid");
+        let amp3 = fourier.getEnergy("highMid");
+        let amp4 = fourier.getEnergy("treble");
+        let amp = (amp1*2 + amp4 - amp2 - amp3)*0.75
+
+        if(amp < 0){amp = 0}
+
 
         if (!paused) {
 
@@ -252,10 +264,12 @@ function ThreeDSpaceRocket(){
                 var cubeR = cubesRight[i];
                 var cubeL = cubesLeft[i];
 
-                if(cubeR.position.y < -400 ){
+                if(cubeR.position.y <= -800 ){
                     if(i === 0 ){
                         cubeR.position.y = cubesRight[cubesRight.length-1].position.y + cubeSize/2;
                         cubeL.position.y = cubesLeft[cubesLeft.length-1].position.y + cubeSize/2;
+                        cubeR.scale.z =  1;
+                        cubeL.scale.z =  1;
                     } else {
                         cubeR.position.y = cubesRight[i-1].position.y + cubeSize/2;
                         cubeR.scale.z = 1;
@@ -264,14 +278,15 @@ function ThreeDSpaceRocket(){
                     }
                 }
 
+                // moving the cube backwards
                 cubeR.position.y +=- speed ;
                 cubeL.position.y +=- speed ;
 
-                if(cubeR.position.y <= 120 && cubeR.position.y > -120){
-                    cubeR.scale.z = amp*0.075;
+                if(cubeR.position.y <= cubeSize/2 && cubeR.position.y >= -cubeSize/2){
+                    cubeR.scale.z = amp*0.060 + 1;
                 }
-                if(cubeL.position.y <= 120 && cubeL.position.y > -120){
-                    cubeL.scale.z = amp*0.075;
+                if(cubeL.position.y <= cubeSize/2 && cubeL.position.y >= -cubeSize/2){
+                    cubeL.scale.z = amp*0.060 + 1;
                 }
             }
 
@@ -288,6 +303,7 @@ function ThreeDSpaceRocket(){
                 planes[2].position.y = planes[1].position.y + horizon;
             }
 
+            // moving the plane backwards
             planes[0].position.y +=- speed ;
             planes[1].position.y +=- speed ;
             planes[2].position.y +=- speed ;
@@ -299,8 +315,6 @@ function ThreeDSpaceRocket(){
         render();
 
         time = Date.now();
-
-        // window.requestAnimationFrame(animate);
 
     }
 
@@ -342,22 +356,7 @@ function ThreeDSpaceRocket(){
 
 
     function onOrientation(event){
-        /*
-                    alpha = event.alpha
-                    beta = event.beta;
-                    gamma = event.gamma;
 
-                    if( beta > 5){
-                        moveRight = false;
-                        moveLeft = true;
-                    } else if(beta < -5){
-                        moveLeft = false;
-                        moveRight = true;
-                    } else {
-                        moveLeft = false;
-                        moveRight = false;
-                    }
-        */
     }
 
     function onTouchStart(event){
@@ -409,8 +408,7 @@ function ThreeDSpaceRocket(){
     }
 
 
-
-
 }
 
+//Setting global function from the module.
 window.ThreeDSpaceRocket = ThreeDSpaceRocket;

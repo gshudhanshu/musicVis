@@ -12,7 +12,8 @@ function RidgePlots(){
         bigScale:50,
         ampFactor: 3
 	}
-    
+
+    //tweakpane GUI
     this.addPaneGui = function() {
         paneFolder = pane.addFolder({title: this.panePARAMS.name});
         var arcShape = paneFolder.addFolder({ title: 'Arc Shape' })
@@ -50,6 +51,7 @@ function RidgePlots(){
 
     }
 
+    //Remove tweakpane GUI
     this.removePaneGui = function(){
         paneFolder.dispose();
     }
@@ -59,9 +61,8 @@ function RidgePlots(){
     var output = [];
     var fourier = new p5.FFT(0.4, 1024);
     
-this.addWave = function(){
-    
-    // output.push([{x: startX, y: startY}, {x: startX +spectrumWidth, y: startY}])
+
+    this.addWave = function(){
 
     var w = fourier.waveform();
     var radius = this.panePARAMS.arcSize/2;
@@ -95,7 +96,8 @@ this.addWave = function(){
 
     this.setup = function() {   }
 
-	this.draw = function(){
+    // Draw function similar to P5.js
+    this.draw = function(){
         colorMode(RGB, 255);
         angleMode(DEGREES);
 		push();

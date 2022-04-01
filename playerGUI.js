@@ -117,12 +117,11 @@ function seekProgress(e){
 }
 
 function togglePlayList(e){
-    if (playlistDrawer.style.display == "none") {
+    if (playlistDrawer.style.display === "none") {
         playlistDrawer.style.display = "block";
     } else {
         playlistDrawer.style.display = "none";
     }
-    console.log("TEST");
 }
 
 //Helper functions
@@ -135,5 +134,32 @@ function secToMMSS(currentSecond){
 }
 
 //Constructor function for generating playlist html code from object
-function CreateTrackItem(){
+function CreateTrackItems(){
+    // Register just-handlebars-helpers with handlebars
+    H.registerHelpers(Handlebars);
+
+    const playlist = document.getElementById("playlist-template").innerHTML;
+    const template = Handlebars.compile(playlist);
+    const playerData = template(musicPlaylist)
+    document.getElementsByClassName("player_data")[0].innerHTML += playerData;
+
+}
+CreateTrackItems()
+
+const musicRowClick = document.querySelectorAll(".music_row");
+
+for (var i = 0; i < musicRowClick.length; i++) {
+    musicRowClick[i].addEventListener('click', changeMusic, false);
+}
+function changeMusic() {
+    var songNo = parseInt(this.querySelector(".column_one").textContent);
+    sound.stop();
+    sound = soundArr[songNo-1];
+    sound.play();
+
+    playBtn = document.querySelector(".play");
+    playBtn.classList.remove("fa-pause");
+    playBtn.classList.remove("fa-play");
+    playBtn.classList.add("fa-pause");
+    trackTitle.innerHTML = musicPlaylist[songNo-1].title;
 }

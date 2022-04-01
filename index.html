@@ -12,13 +12,15 @@
   <script src="lib/p5.min.js"></script>
   <script src="lib/p5.easycam.min.js"></script>
   <script src="lib/p5.sound.js"></script>
-<!--  <script src="lib/three.min.js"></script>-->
-<!--  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r58/three.min.js"></script>-->
   <script src="lib/dat.gui.js"></script>
   <script src="lib/tweakpane-3.0.7.js"></script>
   <script src="lib/quicksettings.js"></script>
   <script src="lib/p5.dom.js"></script>
   <script src="lib/p5.gui.js"></script>
+
+<!--  Handle bar libs-->
+  <script src="lib/handlebars.min-v4.7.7.js"></script>
+  <script src="/lib/h.min.js"></script>
 
   <script async src="lib/es-module-shims.js"></script>
 
@@ -34,7 +36,6 @@
   <script src="sketch.js"></script>
   <script src="controlsAndInput.js"></script>
   <script src="p5Gui.js"></script>
-<!--  <script src="playerGUI.js"></script>-->
   <script src="visualisations.js"></script>
 
   <script src="spectrum.js"></script>
@@ -60,6 +61,13 @@
       <div class="scroll_playlist">
         <div class="play_list_container">
           <ul class="player_data">
+
+<!--            <li class="music_row">-->
+<!--            </li>-->
+<!--            <li class="music_row"></li>-->
+<!--            <li class="music_row"></li>-->
+          </ul>
+          <script id="playlist-template" type="text/x-handlebars-template">
             <li class="header_row">
               <div class="column_one ver_hor_center">No</div>
               <div class="column_two ver_hor_center">Thumbnail</div>
@@ -67,18 +75,17 @@
               <div class="column_four ver_hor_center">Composer</div>
               <div class="column_five ver_hor_center">Length</div>
             </li>
+            {{#each this}}
             <li class="music_row">
-              <div class="column_one track_index ver_hor_center">1</div>
-              <img class="column_two track_thumb ver_hor_center" src="assets/thumb/thumb.jpg" alt="thumb">
-              <div class="column_three track_title ver_hor_center">Sample track</div>
-              <div class="column_four track_composer ver_hor_center">Sample composer</div>
-              <div class="column_five track_length ver_hor_center">4:13</div>
+              <div class="column_one track_index ver_hor_center">{{sum 1 @index }}</div>
+              <img class="column_two track_thumb ver_hor_center"
+                   src="{{thumb}}" alt="thumb">
+              <div class="column_three track_title ver_hor_center">{{title}}</div>
+              <div class="column_four track_composer ver_hor_center">{{composer}}</div>
+              <div class="column_five track_length ver_hor_center">{{length}}</div>
             </li>
-<!--            <li class="music_row">-->
-<!--            </li>-->
-<!--            <li class="music_row"></li>-->
-<!--            <li class="music_row"></li>-->
-          </ul>
+            {{/each}}
+          </script >
         </div>
       </div>
     </div>

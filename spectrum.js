@@ -9,16 +9,20 @@ function Spectrum(){
 		highFreqColor: {r: 255, g:50, b: 200}
 	}
 
-	  this.addPaneGui = function(pane) {
+	//tweakpane GUI
+	this.addPaneGui = function(pane) {
 		paneFolder = pane.addFolder({
 			title: this.panePARAMS.name,
 		  });
 		//   pane.title = this.panePARAMS.name;
 		paneFolder.addInput(this.panePARAMS, 'bins', {
 			options: {
-			  low: 16,
-			  medium: 32,
-			  high: 64,
+			  16: 16,
+			  32: 32,
+			  64: 64,
+			  128:128,
+			  256:256,
+			  512:512,
 			},
 		  });
 		  paneFolder.addInput(this.panePARAMS, 'colHeight', {
@@ -29,19 +33,18 @@ function Spectrum(){
 		  paneFolder.addInput(this.panePARAMS, 'highFreqColor');
     }
 
+	//Remove tweakpane GUI
     this.removePaneGui = function(){
 		paneFolder.dispose();
     }
 
 	this.setup = function() {   }
 
+	// Draw function similar to P5.js
 	this.draw = function(){
 		colorMode(RGB, 255);
 		push();
-		// var spectrum = fourier.analyze(this.bins);
-		// var spectrum = fourier.smooth(0.8);
 		var  spectrum = fourier.analyze(this.panePARAMS.bins);
-		// console.log(spectrum);
 		noStroke();
 
 

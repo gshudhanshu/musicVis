@@ -3,20 +3,7 @@
 function ControlsAndInput(){
 	
 	this.menuDisplayed = false;
-	
-	//playback button displayed in the top left of the screen
-	// this.playbackButton = new PlaybackButton();
 
-	//make the window fullscreen or revert to windowed
-	// this.mousePressed = function(){
-	// 	if(!this.playbackButton.hitCheck()){
-	// 		var fs = fullscreen();
-	// 		fullscreen(!fs); 2
-	// 	}
-	// };
-
-	//responds to keyboard presses
-	//@param keycode the ascii code of the keypressed
 	this.keyPressed = function(keycode){
 		console.log(keycode);
 		if(keycode == 32){
