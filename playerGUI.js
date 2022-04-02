@@ -42,6 +42,7 @@ function togglePlay(event) {
     }
     playBtn.classList.toggle("fa-play");
     playBtn.classList.toggle("fa-pause");
+    trackTitle.innerHTML = musicPlaylist[currentMusic].title;
 }
 
 function toggleVolume(e) {
@@ -81,7 +82,10 @@ function nextMusic() {
         sound = soundArr[currentMusic];
         sound.play();
     }
-    playBtn.classList.toggle("fa-pause");
+    playBtn = document.querySelector(".play");
+    playBtn.classList.remove("fa-pause");
+    playBtn.classList.remove("fa-play");
+    playBtn.classList.add("fa-pause");
     trackTitle.innerHTML = musicPlaylist[currentMusic].title;
 }
 
@@ -96,7 +100,10 @@ function previousMusic() {
         sound = soundArr[currentMusic];
         sound.play();
     }
-    playBtn.classList.toggle("fa-pause");
+    playBtn = document.querySelector(".play");
+    playBtn.classList.remove("fa-pause");
+    playBtn.classList.remove("fa-play");
+    playBtn.classList.add("fa-pause");
     trackTitle.innerHTML = musicPlaylist[currentMusic].title;
 }
 

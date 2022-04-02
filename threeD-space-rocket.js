@@ -1,30 +1,33 @@
 //Importing modules
 import * as THREE from 'three';
-import Stats from './lib/stats.module.js';
-import { OrbitControls } from './lib/OrbitControls.js';
-import { GLTFLoader } from './lib/GLTFLoader.js';
-import { DRACOLoader } from './lib/DRACOLoader.js';
-import { RGBELoader } from './lib/RGBELoader.js';
-import {createMultiMaterialObject} from "./lib/utils/SceneUtils.js";
+import {OrbitControls} from './lib/OrbitControls.js';
+import {GLTFLoader} from './lib/GLTFLoader.js';
+import {DRACOLoader} from './lib/DRACOLoader.js';
+import {RGBELoader} from './lib/RGBELoader.js';
 
 function ThreeDSpaceRocket(){
 
     this.name = "3D Car & Cuboids";
     this.panePARAMS = {
         name: this.name,
-        lowAmpColor: 0xff0055,
-        highAmpColor: 0x0088ff
+        carColor: 0xff0000,
+        lowAmpColor: {r: 0, g:215, b: 255},
+        highAmpColor: {r: 255, g:50, b: 200}
     }
 
     this.addPaneGui = function(pane) {
-        paneFolder = pane.addFolder({
-            title: this.panePARAMS.name,
-        });
+        paneFolder = pane.addFolder({ title: this.panePARAMS.name, });
+        const car = paneFolder.addFolder({title: 'Car'});
+        const cuboids = paneFolder.addFolder({title: 'Cuboids'});
 
-        paneFolder.addInput(this.panePARAMS, 'lowAmpColor', {
+        car.addInput(this.panePARAMS, 'carColor', {
             view: 'color',
         });
-        paneFolder.addInput(this.panePARAMS, 'highAmpColor', {
+
+        cuboids.addInput(this.panePARAMS, 'lowAmpColor', {
+            view: 'color',
+        });
+        cuboids.addInput(this.panePARAMS, 'highAmpColor', {
             view: 'color',
         });
     }
@@ -41,6 +44,8 @@ function ThreeDSpaceRocket(){
     var camera, scene, renderer;
 
     var polys, planes;
+
+    var carModel;
 
     var stats, controls;
     const wheels = [];
@@ -94,23 +99,40 @@ function ThreeDSpaceRocket(){
         scene.environment = new RGBELoader().load( './assets/textures/venice_sunset_1k.hdr' );
         scene.environment.mapping = THREE.EquirectangularReflectionMapping;
 
+        const dirLight = new THREE.DirectionalLight( 0xffffff );
+        dirLight.position.set( -5, -10, 8 );
+        dirLight.castShadow = true;
+        dirLight.shadow.camera.top = 2;
+        dirLight.shadow.camera.bottom = - 2;
+        dirLight.shadow.camera.left = - 2;
+        dirLight.shadow.camera.right = 2;
+        dirLight.shadow.camera.near = 0.1;
+        dirLight.shadow.camera.far = 40;
+        scene.add( dirLight );
+
         addPlanes();
-        addPolys();
+        cuboids();
 
         //Materials
         const bodyMaterial = new THREE.MeshPhysicalMaterial( {
-            color: 0xff0000, metalness: 1.0, roughness: 0.5, clearcoat: 1.0, clearcoatRoughness: 0.03, sheen: 0.5
+            color: self.panePARAMS.carColor,
+            metalness: 1.0,
+            roughness: 0.5,
+            reflectivity: 0.5,
+            clearcoat: 1.0,
+            clearcoatRoughness: 0.03,
+            sheen: 0.5,
         } );
 
         const detailsMaterial = new THREE.MeshStandardMaterial( {
-            color: 0xffffff, metalness: 1.0, roughness: 0.5
+            color: 0xffffff, metalness: 1.0, roughness: 0.5, reflectivity: 0.5,
         } );
 
         const glassMaterial = new THREE.MeshPhysicalMaterial( {
-            color: 0xffffff, metalness: 0.25, roughness: 0, transmission: 1.0
+            color: 0xffffff, metalness: 0.25, roughness: 0, transmission: 1.0, clearcoat: 0.4, reflectivity: 1
         } );
 
-        // Car
+        // Ferrari Car
         // Used 3D car template
         // https://threejs.org/examples/?q=car#webgl_materials_car
 
@@ -124,7 +146,7 @@ function ThreeDSpaceRocket(){
 
         loader.load( 'assets/models/ferrari.glb', function ( gltf ) {
 
-            const carModel = gltf.scene.children[ 0 ];
+            carModel = gltf.scene.children[ 0 ];
 
             carModel.scale.set(30,30,30)
 
@@ -144,6 +166,16 @@ function ThreeDSpaceRocket(){
                 carModel.getObjectByName( 'wheel_rl' ),
                 carModel.getObjectByName( 'wheel_rr' )
             );
+
+            // // Add lights to the car
+            // const headlights = new THREE.SpotLight(0xffffcc, 1);
+            // headlights.position.set(0, 0, 1);
+            // headlights.target.position.set(0, 0, 2);
+            //
+            // carModel.add(headlights);
+            // carModel.add(headlights.target); // See docs https://threejs.org/docs/#api/en/lights/SpotLight.target
+
+
 
             // shadow
             const mesh = new THREE.Mesh(
@@ -185,12 +217,18 @@ function ThreeDSpaceRocket(){
 
         var material = new THREE.MeshLambertMaterial({color:0xff0000,opacity:0.2,transparent:true,overdraw:0.5});
 
+        // var plane = new THREE.Mesh(
+        //     new THREE.PlaneGeometry(horizon, horizon, planeSegments, planeSegments),
+        //     // new THREE.GridHelper( 400, 40, 0x0000ff, 0x808080 ),
+        //     new THREE.MeshLambertMaterial({ color:0x00FFFF, wireframe:true, transparent:false })
+        // );
 
-        var plane = new THREE.Mesh(
-            new THREE.PlaneGeometry(horizon, horizon, planeSegments, planeSegments),
-            new THREE.MeshBasicMaterial({ color:0x00FF00, wireframe:true, transparent:true })
-        );
+        const plane = new THREE.GridHelper( horizon, planeSegments, 0x00FF00, 0x00FF00 );
+
+
         plane.position.z = 0;
+
+        plane.rotation.x = - Math.PI / 2;
 
         planes[0] = plane;
 
@@ -209,15 +247,22 @@ function ThreeDSpaceRocket(){
     // Adding cuboids
     var cubesLeft, cubesRight, cube;
     var cubeSize;
-    function addPolys(){
+    function cuboids(){
 
-        const material = new THREE.MeshStandardMaterial({color: self.panePARAMS.lowAmpColor})
-        const boxGeometry = new THREE.BoxGeometry(40,40,5)
+        const material = new THREE.MeshStandardMaterial()
+        material.color.setRGB(
+            self.panePARAMS.lowAmpColor.r/255,
+            self.panePARAMS.lowAmpColor.g/255,
+            self.panePARAMS.lowAmpColor.b/255
+        );
+
+        cubeSize =  40;
+        const boxGeometry = new THREE.BoxGeometry(cubeSize,cubeSize,5)
 
         var totalcubes = 300;
         cubesRight = [];
         cubesLeft = [];
-        cubeSize =  40;
+
 
         const cube = new THREE.Mesh(boxGeometry, material)
         cube.position.set(150, 0, 0);
@@ -227,7 +272,7 @@ function ThreeDSpaceRocket(){
             cubesRight[i] = cube.clone();
                 cubesRight[i].position.x = 150;
 
-            cubesRight[i].position.y = cube.position.y + cubeSize/2*i;
+            cubesRight[i].position.y = cube.position.y + cubeSize*i;
             scene.add( cubesRight[i] );
         }
 
@@ -236,7 +281,7 @@ function ThreeDSpaceRocket(){
         for(let i = 0; i < totalcubes; i++){
             cubesLeft[i] = cube.clone();
                 cubesLeft[i].position.x = -150;
-            cubesLeft[i].position.y = cube.position.y + cubeSize/2*i;
+            cubesLeft[i].position.y = cube.position.y + cubeSize*i;
             scene.add( cubesLeft[i] );
         }
 
@@ -244,7 +289,6 @@ function ThreeDSpaceRocket(){
 
     //Draw function similar to p5js
     this.draw = function() {
-
         fourier.analyze()
         // let amp = fourier.getEnergy(20, 140);
         // if(amp >= 240) {amp += amp*1.5-amp}
@@ -257,23 +301,35 @@ function ThreeDSpaceRocket(){
 
         if(amp < 0){amp = 0}
 
-
         if (!paused) {
+
+            carModel.getObjectByName( 'body' ).material.color = new THREE.Color( self.panePARAMS.carColor )
+
+            // carModel.getObjectByName( 'body' ).material.color = self.panePARAMS.carColor;
 
             for(var i = 0; i < cubesRight.length; i++){
                 var cubeR = cubesRight[i];
                 var cubeL = cubesLeft[i];
 
                 if(cubeR.position.y <= -800 ){
+
+                    //Resetting the color changed from amp
+                    let newMat = cubeR.material.clone();
+                    newMat.color.setRGB(self.panePARAMS.lowAmpColor.r/255,
+                        self.panePARAMS.lowAmpColor.g/255,
+                        self.panePARAMS.lowAmpColor.b/255);
+                    cubeR.material = newMat;
+                    cubeL.material = newMat;
+
                     if(i === 0 ){
-                        cubeR.position.y = cubesRight[cubesRight.length-1].position.y + cubeSize/2;
-                        cubeL.position.y = cubesLeft[cubesLeft.length-1].position.y + cubeSize/2;
+                        cubeR.position.y = cubesRight[cubesRight.length-1].position.y + cubeSize;
+                        cubeL.position.y = cubesLeft[cubesLeft.length-1].position.y + cubeSize;
                         cubeR.scale.z =  1;
                         cubeL.scale.z =  1;
                     } else {
-                        cubeR.position.y = cubesRight[i-1].position.y + cubeSize/2;
+                        cubeR.position.y = cubesRight[i-1].position.y + cubeSize;
                         cubeR.scale.z = 1;
-                        cubeL.position.y = cubesLeft[i-1].position.y + cubeSize/2;
+                        cubeL.position.y = cubesLeft[i-1].position.y + cubeSize;
                         cubeL.scale.z = 1;
                     }
                 }
@@ -282,11 +338,26 @@ function ThreeDSpaceRocket(){
                 cubeR.position.y +=- speed ;
                 cubeL.position.y +=- speed ;
 
-                if(cubeR.position.y <= cubeSize/2 && cubeR.position.y >= -cubeSize/2){
-                    cubeR.scale.z = amp*0.060 + 1;
+                //fade the colour of the bin from green to red
+                let r = map(amp1, 0, 255, self.panePARAMS.lowAmpColor.r, self.panePARAMS.highAmpColor.r)/255;
+                let g = map(amp1, 0, 255, self.panePARAMS.lowAmpColor.g, self.panePARAMS.highAmpColor.g)/255;
+                let b = map(amp1, 0, 255, self.panePARAMS.lowAmpColor.b, self.panePARAMS.highAmpColor.b)/255;
+
+                if(cubeR.position.y <= cubeSize && cubeR.position.y >= -cubeSize && amp > 0){
+                    cubeR.scale.z = amp * 0.060 + 1
+
+                    //Changing color as per amp
+                    var newMat = cubeR.material.clone();
+                    newMat.color.setRGB(r,g,b);
+                    cubeR.material = newMat;
                 }
-                if(cubeL.position.y <= cubeSize/2 && cubeL.position.y >= -cubeSize/2){
+                if(cubeL.position.y <= cubeSize && cubeL.position.y >= -cubeSize && amp > 0){
                     cubeL.scale.z = amp*0.060 + 1;
+
+                    //Changing color as per amp
+                    var newMat = cubeR.material.clone();
+                    newMat.color.setRGB(r,g,b);
+                    cubeL.material = newMat;
                 }
             }
 
