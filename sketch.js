@@ -60,6 +60,11 @@ var musicPlaylist = [
 		thumb: 'assets/music/thumb/Tobu - Candyland.jpg',
 		title: 'Candyland',
 		composer: 'Tobu', length: '1:28'},
+
+	{path: 'assets/music/376737_Skullbeatz___Bad_Cat_Maste.mp3',
+		thumb: 'assets/music/thumb/Tobu - Candyland.jpg',
+		title: 'Bad_Cat_Maste.mp3',
+		composer: 'Skullbeatz', length: '1:28'},
 ]
 
 

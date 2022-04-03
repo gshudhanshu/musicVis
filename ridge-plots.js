@@ -1,13 +1,13 @@
-//Contructor function for ridge-plots Vis
+//Constructor function for ridge-plots Vis
 function RidgePlots(){
     this.name = "Ridge Plots";
 	this.panePARAMS = {
 		name: this.name,
 		arcSize: 400,
-        scaleFactor: 1.5,
+        scaleFactor: 2.5,
         maxRadius:500,
-        speed: 0.7,
-        lineGap: 30,
+        speed: 0.9,
+        lineGap: 40,
         smallScale:5,
         bigScale:50,
         ampFactor: 3
@@ -24,7 +24,7 @@ function RidgePlots(){
           });
         arcShape.addInput(this.panePARAMS, 'scaleFactor', {
             min: 1,
-            max: 3,
+            max: 5,
           });
 
         arcLines.addInput(this.panePARAMS, 'maxRadius', {
@@ -56,24 +56,24 @@ function RidgePlots(){
         paneFolder.dispose();
     }
 
-	var startX = width/2;
-	var startY = height/2
-    var output = [];
-    var fourier = new p5.FFT(0.4, 1024);
-    
+	let startX = width/2;
+    let startY = height/2
+    let output = [];
+    let fourier = new p5.FFT(0.4, 1024);
+    let amplitude = new p5.Amplitude();
 
+    //Function for adding waves
     this.addWave = function(){
+        let w = fourier.waveform();
+        let radius = this.panePARAMS.arcSize/2;
 
-    var w = fourier.waveform();
-    var radius = this.panePARAMS.arcSize/2;
-
-	var outputWave = [];
+        let outputWave = [];
 
         for(let i = 0; i < w.length; i++) {
 
             if (i % 20 === 0) {
-                var degree = map(i, 0, w.length, 0, 180);
-                var waveVal;
+                let degree = map(i, 0, w.length, 0, 180);
+                let waveVal;
 
                 if(i < 1024 * 0.05 || i > 1024 * 0.95) {
                     waveVal = map(w[i], - 1, 1, - this.panePARAMS.smallScale, this.panePARAMS.smallScale);
@@ -88,13 +88,12 @@ function RidgePlots(){
                     waveVal: waveVal
                 })
             }
-
 	    }
 	    output.push(outputWave);
-
     }
 
-    this.setup = function() {   }
+    this.setup = function() {
+    }
 
     // Draw function similar to P5.js
     this.draw = function(){
@@ -106,10 +105,13 @@ function RidgePlots(){
         noFill();
         stroke(255)
         strokeWeight(2)
+
+        //Adding new wave values in outputWave Array
         if(frameCount % this.panePARAMS.lineGap === 0){
             this.addWave();
         }
-    
+
+        //Generating Arc line from outputWave Array
         for(var i= 0; i< output.length; i++){
             var o = output[i]
             var degree= 0
@@ -127,15 +129,18 @@ function RidgePlots(){
             }
         }
 
-		fourier.analyze();
-        var bass = fourier.getEnergy( "bass" );
-        var mapBass = map( bass, 0, 255, 1, this.panePARAMS.scaleFactor);
+		// fourier.analyze();
+        // var bass = fourier.getEnergy( "bass" );
+        // var bass = new p5.Amplitude();
+        var level  = amplitude.getLevel();
+        var mapLevel = map( level, 0, 1, 1, this.panePARAMS.scaleFactor);
 
+        //Drawing and resizing the bottom semicircle
         noStroke();
         fill(255);
         arc(startX, startY,
-            this.panePARAMS.arcSize*mapBass,
-            this.panePARAMS.arcSize*mapBass,
+            this.panePARAMS.arcSize*mapLevel,
+            this.panePARAMS.arcSize*mapLevel,
              0, 180);
 
 		pop();

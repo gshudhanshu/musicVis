@@ -4,6 +4,8 @@ function CircleLine(){
     this.panePARAMS = {
         name: this.name,
         ellipseSize: 200,
+        lineLength:100,
+        moveThresh: 0.7,
         scale:1,
         particleSize: 10,
     }
@@ -19,6 +21,17 @@ function CircleLine(){
             max: 400,
             step: 50
         });
+        paneFolder.addInput(this.panePARAMS, 'lineLength', {
+            min: 5,
+            max: 400,
+            step: 5
+        });
+        paneFolder.addInput(this.panePARAMS, 'moveThresh', {
+            min: 0.1,
+            max: 1,
+            step: 0.01
+        });
+
         paneFolder.addInput(this.panePARAMS, 'particleSize', {
             min: 5,
             max: 25,
@@ -33,11 +46,11 @@ function CircleLine(){
 
     var noiseStep = 0.01;
     var prog = 0;
-    var progThresh = 0.7;
-    var seedThresh = 0.8;
     var particles = [];
     var x, y;
     var fourier = new p5.FFT();
+    var amplitude = new p5.Amplitude();
+    var self = this;
 
     this.setup = function() {   }
 
@@ -46,18 +59,19 @@ function CircleLine(){
         colorMode(HSB, 360,100,100)
 
         var spectrum = fourier.analyze();
+        var level =  map(amplitude.getLevel(),0,1,0.1,1*this.panePARAMS.scale);
         var bass = map(fourier.getEnergy("bass"),0,255,0,1*this.panePARAMS.scale);
         var treble = map(fourier.getEnergy("treble"),0,255,0,1*this.panePARAMS.scale);
         var dataColor = getHSBColor(bass);
 
         noStroke();
         fill(dataColor);
-        ellipseSize = this.panePARAMS.ellipseSize * bass
+        ellipseSize = this.panePARAMS.ellipseSize * level
 
         noiseLine(bass,treble, ellipseSize);
 
         //Particles
-        var size = map(bass, 0, 1, 0, 200);
+        var size = map(level, 0, 1, 0, 200);
         particles.push(new Particle(color(dataColor)));
         for (var i = 0; i < particles.length; i ++) {
             //Creating a variable to use so that if there are more particles than the samples(1024)
@@ -91,7 +105,7 @@ function CircleLine(){
         translate(width/2, height/2);
         stroke(0,255,0);
         strokeWeight(1);
-        for(var i = 0; i < 100; i++)
+        for(var i = 0; i < self.panePARAMS.lineLength; i++)
         {
             var dataColor = getHSBColor(energy);
             fill(dataColor);
@@ -101,18 +115,13 @@ function CircleLine(){
             ellipse(x,y,size,size);
         }
 
-        if(energy > progThresh) {
+        if(energy > self.panePARAMS.moveThresh) {
             prog += 0.05;
-        }
-
-        if(energy2 > seedThresh) {
-            noiseSeed();
         }
 
         pop();
     }
 
-    var self = this;
 //Particle class
 //col - colour of the particle
     function Particle(col) {

@@ -14,7 +14,6 @@ function Spectrum(){
 		paneFolder = pane.addFolder({
 			title: this.panePARAMS.name,
 		  });
-		//   pane.title = this.panePARAMS.name;
 		paneFolder.addInput(this.panePARAMS, 'bins', {
 			options: {
 			  16: 16,
@@ -62,8 +61,7 @@ function Spectrum(){
 				this.panePARAMS.lowFreqColor.b, this.panePARAMS.highFreqColor.b);
 			fill(r, g, b);
 
-			//draw each bin as a rectangle from the left of the screen
-			//bottop to top
+			//drawing each bin as a rectangle from the bottom of the screen
 
 			var x = map(i, 0, this.panePARAMS.bins, width*0.15, width*0.85);
 			var h = map(spectrum[i], 0, 255, 0, -height*this.panePARAMS.colHeight/100);

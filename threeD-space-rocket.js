@@ -12,7 +12,8 @@ function ThreeDSpaceRocket(){
         name: this.name,
         carColor: 0xff0000,
         lowAmpColor: {r: 0, g:215, b: 255},
-        highAmpColor: {r: 255, g:50, b: 200}
+        highAmpColor: {r: 255, g:50, b: 200},
+        scaleFactor: 2.0,
     }
 
     this.addPaneGui = function(pane) {
@@ -29,6 +30,11 @@ function ThreeDSpaceRocket(){
         });
         cuboids.addInput(this.panePARAMS, 'highAmpColor', {
             view: 'color',
+        });
+        cuboids.addInput(this.panePARAMS, 'scaleFactor', {
+            min: 1,
+            max: 7,
+            step: 0.25
         });
     }
 
@@ -62,6 +68,7 @@ function ThreeDSpaceRocket(){
     var velocity = 0;
 
     var fourier = new p5.FFT();
+    let amplitude = new p5.Amplitude(0.8);
 
 
     init();
@@ -81,8 +88,8 @@ function ThreeDSpaceRocket(){
 
         camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, horizon);
 
-        camera.position.y = -500;
-        camera.position.z = 100;
+        camera.position.y = -700;
+        camera.position.z = 200;
 
         camera.lookAt(new THREE.Vector3(0,0,0));
 
@@ -292,14 +299,16 @@ function ThreeDSpaceRocket(){
         fourier.analyze()
         // let amp = fourier.getEnergy(20, 140);
         // if(amp >= 240) {amp += amp*1.5-amp}
-        let amp1 = fourier.getEnergy("bass");
-        // if(amp1 >= 252) {amp1 = amp1*1.15}
-        let amp2 = fourier.getEnergy("lowMid");
-        let amp3 = fourier.getEnergy("highMid");
-        let amp4 = fourier.getEnergy("treble");
-        let amp = (amp1*2 + amp4 - amp2 - amp3)*0.75
+        // let amp1 = fourier.getEnergy("bass");
+        // // if(amp1 >= 252) {amp1 = amp1*1.15}
+        // let amp2 = fourier.getEnergy("lowMid");
+        // let amp3 = fourier.getEnergy("highMid");
+        // let amp4 = fourier.getEnergy("treble");
+        // let amp = (amp1*2 + amp4 - amp2 - amp3)*0.75
 
-        if(amp < 0){amp = 0}
+        let amp = amplitude.getLevel()*255*self.panePARAMS.scaleFactor;
+
+        // if(amp < 0){amp = 0}
 
         if (!paused) {
 
@@ -339,9 +348,9 @@ function ThreeDSpaceRocket(){
                 cubeL.position.y +=- speed ;
 
                 //fade the colour of the bin from green to red
-                let r = map(amp1, 0, 255, self.panePARAMS.lowAmpColor.r, self.panePARAMS.highAmpColor.r)/255;
-                let g = map(amp1, 0, 255, self.panePARAMS.lowAmpColor.g, self.panePARAMS.highAmpColor.g)/255;
-                let b = map(amp1, 0, 255, self.panePARAMS.lowAmpColor.b, self.panePARAMS.highAmpColor.b)/255;
+                let r = map(amp, 0, 255, self.panePARAMS.lowAmpColor.r, self.panePARAMS.highAmpColor.r)/255;
+                let g = map(amp, 0, 255, self.panePARAMS.lowAmpColor.g, self.panePARAMS.highAmpColor.g)/255;
+                let b = map(amp, 0, 255, self.panePARAMS.lowAmpColor.b, self.panePARAMS.highAmpColor.b)/255;
 
                 if(cubeR.position.y <= cubeSize && cubeR.position.y >= -cubeSize && amp > 0){
                     cubeR.scale.z = amp * 0.060 + 1
