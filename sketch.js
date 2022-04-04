@@ -27,47 +27,42 @@ var musicPlaylist = [
 	{path: 'assets/music/Andromedik - SHE [NCS Release].mp3',
 		thumb: 'assets/music/thumb/Andromedik - SHE [NCS Release].jpg',
 		title: 'SHE [NCS Release]',
-		composer: 'Andromedik', length: '1:28'},
+		composer: 'Andromedik', length: '3:57'},
 
 	{path: 'assets/music/Defqwop - Say The Word (feat. The Ruins) [NCS Release].mp3',
 		thumb: 'assets/music/thumb/Defqwop - Say The Word (feat. The Ruins) [NCS Release].jpg',
 		title: 'Say The Word (feat. The Ruins) [NCS Release]',
-		composer: 'Defqwop', length: '1:28'},
+		composer: 'Defqwop', length: '3:05'},
 
 	{path: 'assets/music/Different Heaven - Nekozilla (LFZ Remix) [NCS Release].mp3',
 		thumb: 'assets/music/thumb/Different Heaven - Nekozilla (LFZ Remix) [NCS Release].jpg',
 		title: 'Nekozilla (LFZ Remix) [NCS Release]',
-		composer: 'Heaven', length: '1:28'},
+		composer: 'Heaven', length: '3:05'},
 
 	{path: 'assets/music/Jim Yosef - Firefly [NCS Release].mp3',
 		thumb: 'assets/music/thumb/Jim Yosef - Firefly [NCS Release].jpg',
 		title: 'Firefly [NCS Release]',
-		composer: 'Jim Yosef', length: '1:28'},
+		composer: 'Jim Yosef', length: '4:35'},
 
 	{path: 'assets/music/Jim Yosef & Anna Yvette - Courage [NCS Release].mp3',
 		thumb: 'assets/music/thumb/Jim Yosef & Anna Yvette - Courage [NCS Release].jpg',
 		title: 'Courage [NCS Release]',
-		composer: 'Jim Yosef & Anna Yvette', length: '1:28'},
+		composer: 'Jim Yosef & Anna Yvette', length: '3:44'},
 
 	{path: 'assets/music/Jim Yosef - Link.mp3',
 		thumb: 'assets/music/thumb/Jim Yosef - Link.jpg',
 		title: 'Link',
-		composer: 'Jim Yosef', length: '1:28'},
+		composer: 'Jim Yosef', length: '3:44'},
 
 	{path: 'assets/music/NIVIRO - The Return [NCS Release].mp3',
 		thumb: 'assets/music/thumb/NIVIRO - The Return [NCS Release].jpg',
 		title: 'The Return [NCS Release]',
-		composer: 'NIVIRO', length: '1:28'},
+		composer: 'NIVIRO', length: '3:23'},
 
 	{path: 'assets/music/Tobu - Candyland.mp3',
 		thumb: 'assets/music/thumb/Tobu - Candyland.jpg',
 		title: 'Candyland',
-		composer: 'Tobu', length: '1:28'},
-
-	{path: 'assets/music/376737_Skullbeatz___Bad_Cat_Maste.mp3',
-		thumb: 'assets/music/thumb/Tobu - Candyland.jpg',
-		title: 'Bad_Cat_Maste.mp3',
-		composer: 'Skullbeatz', length: '1:28'},
+		composer: 'Tobu', length: '3:20'},
 ]
 
 //Loading all the required files before starting
@@ -131,7 +126,7 @@ function draw(){
 
 		setTimeout(function () {
 			instructions = 1;
-		}, 5000);
+		}, 7000);
 
 	}
 
