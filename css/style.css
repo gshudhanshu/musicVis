@@ -16,9 +16,9 @@ section {
 }
 
 #p5_loading {
-    height: 100%;
+    height: 100vh;
     width: 100%;
-    padding-top: 25%;
+    padding-top: 50vh;
     text-align: center;
     font-size: 50px;
     text-transform: uppercase;

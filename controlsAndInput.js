@@ -19,8 +19,7 @@ function ControlsAndInput(){
 
 			vis.selectVisual(vis.visuals[visNumber].name);
 			vis.selectedVisual.addPaneGui(pane);
-		}
-	};
+		}	};
 
 	//draws the playback button and potentially the menu
 	this.draw = function(){

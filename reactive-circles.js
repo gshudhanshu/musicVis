@@ -1,3 +1,4 @@
+//Contructor function for Reactive Circles Vis
 function ReactiveCircles() {
     this.name = "Reactive Circles";
     this.panePARAMS = {
@@ -12,8 +13,7 @@ function ReactiveCircles() {
         color6: '#0000ff',
         color7: '#33ccff',
         color8: '#00ff00',
-        // particleThreshold: 230,
-        ampThreshold: 1.2
+        bassThresh: 1.2
     }
 
     //tweakpane GUI
@@ -22,13 +22,9 @@ function ReactiveCircles() {
             title: this.panePARAMS.name,
         });
 
-        // paneFolder.addInput(this.panePARAMS, 'particleThreshold', {
-        //     min: 1,
-        //     max: 250,
-        // });
-        paneFolder.addInput(this.panePARAMS, 'ampThreshold', {
+        paneFolder.addInput(this.panePARAMS, 'bassThresh', {
             min: 1,
-            max: 250,
+            max: 2,
         });
 
         paneFolder.addInput(this.panePARAMS, 'color1');
@@ -51,20 +47,21 @@ function ReactiveCircles() {
         this.panePARAMS.color4, this.panePARAMS.color5, this.panePARAMS.color6,
         this.panePARAMS.color7, this.panePARAMS.color8];
 
-    var particles = []
-
     var fourier = new p5.FFT(this.panePARAMS.smoothing, this.panePARAMS.bins);
 
-    // -- spectrum constrants --
+    // spectrum constrants
     const low = 20;
     const high = 130;
     const bands = 110;
     const thresh = 200;
 
-    // -- circle spectrum constrants --
+    // circle spectrum constrants
     const minR = 150;
     const maxR = 270;
     const overR = 10;
+
+    //particles arr
+    var particles = [];
 
 
     this.setup = function () {
@@ -81,98 +78,64 @@ function ReactiveCircles() {
             this.panePARAMS.color7, this.panePARAMS.color8];
 
         colorMode(RGB, 255);
-        // angleMode(RADIANS);
-        angleMode(DEGREES)
+        angleMode(DEGREES);
 
         fourier.analyze()
-        const bassLevel = max(fourier.getEnergy(low, high) - 160, 0) / 200 + 1;
+        const bassLevel = max(fourier.getEnergy(low, high) - 160, 0) / 300 + 1;
 
-
-        push()
-        translate(width/2, height/2)
-        if(bassLevel>this.panePARAMS.ampThreshold) {
-            rotate(random(-2, 2))
+        push();
+        translate(width/2, height/2);
+        if(bassLevel>this.panePARAMS.bassThresh) {
+            rotate(random(-2, 2));
         }
-        image(bgImg, 0, 0, width + 100, height + 100)
-        pop()
+        image(bgImg, 0, 0, width + 100, height + 100);
+        pop();
 
-        var alpha = map(bassLevel, 1, this.panePARAMS.ampThreshold, 100, 150)
-        fill(20, alpha)
-        noStroke()
-        rect(0, 0, width, height)
+        // Adding darkness to the background image
+        var alpha = map(bassLevel, 1, this.panePARAMS.bassThresh, 100, 150);
+        fill(20, alpha);
+        noStroke();
+        rect(0, 0, width, height);
 
-        push()
-        translate(width/2, height/2)
+        push();
+        translate(width/2, height/2);
 
-        stroke(255)     // stroke color of ring
-        // stroke(220, 107, 255)
-        strokeWeight(3)
-        noFill()
+        //Particle generation
+        var p = new Particle();
+        particles.push(p);
 
+        for(var i = particles.length - 1; i >= 0; i--) {
+            if(!particles[i].edges()) {
+                particles[i].update(bassLevel > this.panePARAMS.bassThresh)
+                particles[i].show()
+            } else {
+                particles.splice(i, 1)
+            }
+        }
 
-
+        //Creating bass spectrum array
         const spectrum = createSmoothSpectrumArr(fourier, low, high, bands, 9);
-        // spectrum = floorSpectrum(spectrum, THRESH);
-        // spectrum = moveAvg(spectrum, 3);
-
-        // translate(width / 2, height / 2);
 
         strokeWeight(1);
-        const th = 4;
 
         for(let c = colors.length-1; c >= 0; c--){
             stroke(colors[c]);
             fill(colors[c]);
             const colorSpec = moveAvg(floorSpectrum(spectrum, thresh - c * 3), 3);
             drawSpectrum(colorSpec, 255 - thresh + c * 3, minR * bassLevel, maxR * bassLevel + overR * 3);
-
         }
-
-        // stroke("#0f0");
-        // fill("#0f0");
-        // const green = moveAvg(floorSpectrum(spectrum, thresh - th * 3), 3);
-        // drawSpectrum(green, 255 - thresh + th * 3, minR * bassLevel, maxR * bassLevel + overR * 3);
-        //
-        // stroke("#00f");
-        // fill("#00f");
-        // const blue = moveAvg(floorSpectrum(spectrum, thresh - th * 2), 3);
-        // drawSpectrum(blue, 255 - thresh + th * 2, minR * bassLevel, maxR * bassLevel + overR * 2);
-        //
-        // stroke("#f00");
-        // fill("#f00");
-        // const red = moveAvg(floorSpectrum(spectrum, thresh - th), 3);
-        // drawSpectrum(red, 255 - thresh + th, minR * bassLevel, maxR * bassLevel + overR * 1);
-        //
-        // stroke("#fff");
-        // fill("#fff");
-        // const white = moveAvg(floorSpectrum(spectrum, thresh), 3);
-        // drawSpectrum(white, 255 - thresh, minR * bassLevel, maxR * bassLevel );
 
         stroke("#fff");
         fill("#000");
-        // noStroke()
 
         circle(0, 0, bassLevel*maxR*1.05);
         image(emblem, 0, 0, minR * bassLevel, minR * bassLevel);
 
-
-        var p = new Particle()
-        particles.push(p)
-
-        for(var i = particles.length - 1; i >= 0; i--) {
-            if(!particles[i].edges()) {
-                particles[i].update(bassLevel > this.panePARAMS.ampThreshold)
-                particles[i].show()
-            } else {
-                particles.splice(i, 1)
-            }
-
-        }
-        pop()
+        pop();
     }
 
 
-    // --- Create Spectrum ---
+    // Create Spectrum
     function createSmoothSpectrumArr(fft, lowFreq, highFreq, bands, overwrapWinSize) {
         const spectrum = [];
         const freqStep = (highFreq - lowFreq) / bands;
@@ -198,7 +161,7 @@ function ReactiveCircles() {
         return avgs;
     }
 
-// --- Draw Circle Spectrum ---
+// Draw Circle Spectrum
     function drawSpectrum(arr, maxEnergy, minR, maxR, transparentR = 0) {
         angleMode(DEGREES);
         beginShape();
@@ -236,38 +199,39 @@ function ReactiveCircles() {
 
 
 
-    //Class for creating small circle particles
+    //Class for creating small circle particles,
+    // it also includes updating particles, checking particle position for edge of the window
     class Particle{
         constructor() {
-            this.pos = p5.Vector.random2D().mult(250)
-            this.vel = createVector(0,0)
-            this.acc = this.pos.copy().mult(random(0.0001, 0.00001))
+            this.pos = p5.Vector.random2D().mult(minR);
+            this.vel = createVector(0,0);
+            this.acc = this.pos.copy().mult(random(0.0001, 0.00001));
 
-            this.w = random(3, 5)
-            this.color = [random(100,255), random(200,255), random(100,255)]
+            this.w = random(3, 5);
+            this.color = [random(100,255), random(200,255), random(100,255)];
         }
+
         update(cond) {
-            this.vel.add(this.acc)
-            this.pos.add(this.vel)
+            this.vel.add(this.acc);
+            this.pos.add(this.vel);
             if(cond) {
-                this.pos.add(this.vel)
-                this.pos.add(this.vel)
-                this.pos.add(this.vel)
+                this.pos.add(this.vel);
+                this.pos.add(this.vel);
+                this.pos.add(this.vel);
             }
         }
         edges() {
             if(this.pos.x < -width/2 || this.pos.x > width/2 || this.pos.y < -height/2 || this.pos.y > height/2) {
-                return true
+                return true;
             } else {
-                return false
+                return false;
             }
         }
         show() {
-            noStroke()
-            fill(this.color)
-            ellipse(this.pos.x, this.pos.y, this.w)
+            noStroke();
+            fill(this.color);
+            ellipse(this.pos.x, this.pos.y, this.w);
         }
     }
-
 
 }

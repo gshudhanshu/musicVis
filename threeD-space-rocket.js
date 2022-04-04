@@ -1,3 +1,4 @@
+//Contructor function for 3D Car & Cuboids Vis
 //Importing modules
 import * as THREE from 'three';
 import {OrbitControls} from './lib/OrbitControls.js';
@@ -14,8 +15,10 @@ function ThreeDSpaceRocket(){
         lowAmpColor: {r: 0, g:215, b: 255},
         highAmpColor: {r: 255, g:50, b: 200},
         scaleFactor: 2.0,
+        speed: 10
     }
 
+    //tweakpane GUI
     this.addPaneGui = function(pane) {
         paneFolder = pane.addFolder({ title: this.panePARAMS.name, });
         const car = paneFolder.addFolder({title: 'Car'});
@@ -36,11 +39,18 @@ function ThreeDSpaceRocket(){
             max: 7,
             step: 0.25
         });
+        cuboids.addInput(this.panePARAMS, 'speed', {
+            min: 1,
+            max: 20,
+            step: 1
+        });
     }
 
+    //Remove tweakpane GUI
     this.removePaneGui = function(){
         paneFolder.dispose();
     }
+
 
     this.setup = function() {
     }
@@ -49,23 +59,23 @@ function ThreeDSpaceRocket(){
 
     var camera, scene, renderer;
 
-    var polys, planes;
-
-    var carModel;
+    var planes ,carModel;
 
     var stats, controls;
     const wheels = [];
 
     var paused = false;
-    var speed = 10;
     var horizon = 3000;
 
     var time = Date.now();
 
     var moveLeft = false;
     var moveRight = false;
+    var moveUp = false;
+    var moveDown = false;
 
-    var velocity = 0;
+    var velocityLR = 0;
+    var velocityUD = 0;
 
     var fourier = new p5.FFT();
     let amplitude = new p5.Amplitude(0.8);
@@ -73,39 +83,41 @@ function ThreeDSpaceRocket(){
 
     init();
 
-
+    //Initialization function
     function init(){
 
+        //html container for threejs Canvas
         const container = document.getElementById( 'threeJsContainer' );
 
+        //Setting up the Canvas in HTML
         renderer = new THREE.WebGLRenderer( { antialias: false } );
         renderer.setSize( window.innerWidth, window.innerHeight );
         renderer.domElement.id = 'threeJsCanvas';
-
         container.appendChild( renderer.domElement );
 
         renderer.setClearColor(0x000000, 1.0);
 
+        //camera settings
         camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, horizon);
-
         camera.position.y = -700;
         camera.position.z = 200;
-
         camera.lookAt(new THREE.Vector3(0,0,0));
 
+        //3d mouse controls settings
         controls = new OrbitControls( camera, container );
         // controls.enableDamping = true;
         // controls.maxDistance = 9;
         // controls.target.set( 0, 0.5, 0 );
         controls.update();
 
+        //scene settings
         scene = new THREE.Scene();
         scene.fog = new THREE.FogExp2( 0x000000, 0.0005 );
-
         scene.background = new THREE.Color( 0x333333 );
         scene.environment = new RGBELoader().load( './assets/textures/venice_sunset_1k.hdr' );
         scene.environment.mapping = THREE.EquirectangularReflectionMapping;
 
+        //light settings
         const dirLight = new THREE.DirectionalLight( 0xffffff );
         dirLight.position.set( -5, -10, 8 );
         dirLight.castShadow = true;
@@ -117,10 +129,11 @@ function ThreeDSpaceRocket(){
         dirLight.shadow.camera.far = 40;
         scene.add( dirLight );
 
+        //adding plane and cuboids on canvas
         addPlanes();
         cuboids();
 
-        //Materials
+        //materials settings
         const bodyMaterial = new THREE.MeshPhysicalMaterial( {
             color: self.panePARAMS.carColor,
             metalness: 1.0,
@@ -141,10 +154,10 @@ function ThreeDSpaceRocket(){
 
         // Ferrari Car
         // Used 3D car template
-        // https://threejs.org/examples/?q=car#webgl_materials_car
+        // source: https://threejs.org/examples/?q=car#webgl_materials_car
 
+        //3d car setting
         const shadow = new THREE.TextureLoader().load( 'assets/models/ferrari_ao.png' );
-
         const dracoLoader = new DRACOLoader();
         dracoLoader.setDecoderPath( 'lib/draco/gltf/' );
 
@@ -174,17 +187,7 @@ function ThreeDSpaceRocket(){
                 carModel.getObjectByName( 'wheel_rr' )
             );
 
-            // // Add lights to the car
-            // const headlights = new THREE.SpotLight(0xffffcc, 1);
-            // headlights.position.set(0, 0, 1);
-            // headlights.target.position.set(0, 0, 2);
-            //
-            // carModel.add(headlights);
-            // carModel.add(headlights.target); // See docs https://threejs.org/docs/#api/en/lights/SpotLight.target
-
-
-
-            // shadow
+            // car shadow
             const mesh = new THREE.Mesh(
                 new THREE.PlaneGeometry( 0.655 * 4, 1.3 * 4 ),
                 new THREE.MeshBasicMaterial( {
@@ -202,7 +205,6 @@ function ThreeDSpaceRocket(){
         } );
 
 
-
         window.addEventListener( 'resize', onWindowResize, false );
         window.addEventListener('keydown', onKeyDown, false);
         window.addEventListener('keyup', onKeyUp, false);
@@ -212,8 +214,6 @@ function ThreeDSpaceRocket(){
         window.addEventListener('mouseup', onTouchEnd, false);
         window.addEventListener('touchmove', onTouchEnd, false);
         window.addEventListener('deviceorientation', onOrientation, false);
-
-
     }
 
     //Adding planes
@@ -223,18 +223,9 @@ function ThreeDSpaceRocket(){
         var planeSegments = 60;
 
         var material = new THREE.MeshLambertMaterial({color:0xff0000,opacity:0.2,transparent:true,overdraw:0.5});
-
-        // var plane = new THREE.Mesh(
-        //     new THREE.PlaneGeometry(horizon, horizon, planeSegments, planeSegments),
-        //     // new THREE.GridHelper( 400, 40, 0x0000ff, 0x808080 ),
-        //     new THREE.MeshLambertMaterial({ color:0x00FFFF, wireframe:true, transparent:false })
-        // );
-
         const plane = new THREE.GridHelper( horizon, planeSegments, 0x00FF00, 0x00FF00 );
 
-
         plane.position.z = 0;
-
         plane.rotation.x = - Math.PI / 2;
 
         planes[0] = plane;
@@ -248,14 +239,14 @@ function ThreeDSpaceRocket(){
         scene.add(planes[0]);
         scene.add(planes[1]);
         scene.add(planes[2]);
-
     }
 
     // Adding cuboids
-    var cubesLeft, cubesRight, cube;
+    var cubesLeft, cubesRight;
     var cubeSize;
     function cuboids(){
 
+        //Cube material
         const material = new THREE.MeshStandardMaterial()
         material.color.setRGB(
             self.panePARAMS.lowAmpColor.r/255,
@@ -265,16 +256,17 @@ function ThreeDSpaceRocket(){
 
         cubeSize =  40;
         const boxGeometry = new THREE.BoxGeometry(cubeSize,cubeSize,5)
+        boxGeometry.translate(0,0,2.5)
 
+        //total cubes tobe added on canvas
         var totalcubes = 300;
         cubesRight = [];
         cubesLeft = [];
 
-
+        //Adding the cues to canvas
+        //Right side cubes
         const cube = new THREE.Mesh(boxGeometry, material)
         cube.position.set(150, 0, 0);
-        boxGeometry.translate(0,0,2.5)
-
         for(let i = 0; i < totalcubes; i++){
             cubesRight[i] = cube.clone();
                 cubesRight[i].position.x = 150;
@@ -283,43 +275,32 @@ function ThreeDSpaceRocket(){
             scene.add( cubesRight[i] );
         }
 
+        //Left side cubes
         cube.position.set(-150, 0, 0);
-
         for(let i = 0; i < totalcubes; i++){
             cubesLeft[i] = cube.clone();
                 cubesLeft[i].position.x = -150;
             cubesLeft[i].position.y = cube.position.y + cubeSize*i;
             scene.add( cubesLeft[i] );
         }
-
     }
 
     //Draw function similar to p5js
     this.draw = function() {
         fourier.analyze()
-        // let amp = fourier.getEnergy(20, 140);
-        // if(amp >= 240) {amp += amp*1.5-amp}
-        // let amp1 = fourier.getEnergy("bass");
-        // // if(amp1 >= 252) {amp1 = amp1*1.15}
-        // let amp2 = fourier.getEnergy("lowMid");
-        // let amp3 = fourier.getEnergy("highMid");
-        // let amp4 = fourier.getEnergy("treble");
-        // let amp = (amp1*2 + amp4 - amp2 - amp3)*0.75
-
         let amp = amplitude.getLevel()*255*self.panePARAMS.scaleFactor;
 
-        // if(amp < 0){amp = 0}
-
         if (!paused) {
-
+            //updating the car color
             carModel.getObjectByName( 'body' ).material.color = new THREE.Color( self.panePARAMS.carColor )
+
 
             for(var i = 0; i < cubesRight.length; i++){
                 var cubeR = cubesRight[i];
                 var cubeL = cubesLeft[i];
 
+                //If the cube's y-coordinate is -800 from the car the cube will be moved to top of the cubes row
                 if(cubeR.position.y <= -800 ){
-
                     //Resetting the color changed from amp
                     let newMat = cubeR.material.clone();
                     newMat.color.setRGB(self.panePARAMS.lowAmpColor.r/255,
@@ -328,6 +309,7 @@ function ThreeDSpaceRocket(){
                     cubeR.material = newMat;
                     cubeL.material = newMat;
 
+                    //Resetting the dimensions of the cube
                     if(i === 0 ){
                         cubeR.position.y = cubesRight[cubesRight.length-1].position.y + cubeSize;
                         cubeL.position.y = cubesLeft[cubesLeft.length-1].position.y + cubeSize;
@@ -342,10 +324,10 @@ function ThreeDSpaceRocket(){
                 }
 
                 // moving the cube backwards
-                cubeR.position.y +=- speed ;
-                cubeL.position.y +=- speed ;
+                cubeR.position.y +=- self.panePARAMS.speed ;
+                cubeL.position.y +=- self.panePARAMS.speed ;
 
-                //fade the colour of the bin from green to red
+                //fade the colour of the bin (lowAmpColor, highAmpColor)
                 let r = map(amp, 0, 255, self.panePARAMS.lowAmpColor.r, self.panePARAMS.highAmpColor.r)/255;
                 let g = map(amp, 0, 255, self.panePARAMS.lowAmpColor.g, self.panePARAMS.highAmpColor.g)/255;
                 let b = map(amp, 0, 255, self.panePARAMS.lowAmpColor.b, self.panePARAMS.highAmpColor.b)/255;
@@ -358,6 +340,7 @@ function ThreeDSpaceRocket(){
                     newMat.color.setRGB(r,g,b);
                     cubeR.material = newMat;
                 }
+
                 if(cubeL.position.y <= cubeSize && cubeL.position.y >= -cubeSize && amp > 0){
                     cubeL.scale.z = amp*0.060 + 1;
 
@@ -368,7 +351,7 @@ function ThreeDSpaceRocket(){
                 }
             }
 
-
+            // If the plane y-coordinate of plane less than -horizon then it will be shifted to top of the planes row
             if(planes[0].position.y < - horizon ){
                 planes[0].position.y = planes[2].position.y + horizon;
             }
@@ -382,18 +365,18 @@ function ThreeDSpaceRocket(){
             }
 
             // moving the plane backwards
-            planes[0].position.y +=- speed ;
-            planes[1].position.y +=- speed ;
-            planes[2].position.y +=- speed ;
+            planes[0].position.y +=- self.panePARAMS.speed ;
+            planes[1].position.y +=- self.panePARAMS.speed ;
+            planes[2].position.y +=- self.panePARAMS.speed ;
 
         }
 
+        //Moving the camera using arrow keys
         moveCamera( Date.now() - time );
 
         render();
 
         time = Date.now();
-
     }
 
     function onWindowResize() {
@@ -409,44 +392,43 @@ function ThreeDSpaceRocket(){
 
         const time = - performance.now() / 1000;
         for ( let i = 0; i < wheels.length; i ++ ) {
-            wheels[ i ].rotation.x = speed * time * Math.PI * 2;
+            wheels[ i ].rotation.x = self.panePARAMS.speed * time * Math.PI * 2;
         }
 
         controls.update();
         renderer.render( scene, camera );
     }
 
-
+    //function for moving camera as per arrow keys
     function moveCamera(delta) {
-
         delta *= 0.1;
 
-        velocity += ( - velocity ) * 0.04 * delta;
+        velocityLR += ( - velocityLR ) * 0.04 * delta;
+        velocityUD += ( - velocityUD ) * 0.04 * delta;
 
-        var multi = speed / 20;
+        var multi = self.panePARAMS.speed / 20;
 
-        if ( moveLeft ) velocity -= multi * delta;
-        if ( moveRight ) velocity += multi * delta;
+        if ( moveLeft ) velocityLR -= multi * delta;
+        if ( moveRight ) velocityLR += multi * delta;
 
-        camera.translateX( velocity );
+        if ( moveUp ) velocityUD -= multi * delta;
+        if ( moveDown ) velocityUD += multi * delta;
+
+        camera.translateX( velocityLR );
+        camera.translateY( velocityUD );
 
     }
 
 
     function onOrientation(event){
-
     }
 
     function onTouchStart(event){
-
         paused = true;
-
     }
 
     function onTouchEnd(event){
-
         paused = false;
-
     }
 
 
@@ -456,11 +438,22 @@ function ThreeDSpaceRocket(){
 
             case 37: // left
             case 65: // a
-                moveLeft = true; break;
+                moveLeft = true;
+                break;
 
             case 39: // right
             case 68: // d
                 moveRight = true;
+                break;
+
+            case 38: // up
+            case 87: // w
+                moveUp = true;
+                break;
+
+            case 40: // down
+            case 83: // s
+                moveDown = true;
                 break;
 
         }
@@ -481,10 +474,19 @@ function ThreeDSpaceRocket(){
                 moveRight = false;
                 break;
 
+            case 38: // up
+            case 87: // w
+                moveUp = false;
+                break;
+
+            case 40: // down
+            case 83: // s
+                moveDown = false;
+                break;
+
         }
 
     }
-
 
 }
 

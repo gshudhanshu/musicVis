@@ -2,7 +2,7 @@ var controls = null;
 //store visualisations in a container
 var vis = null;
 //variable for the p5 sound object
-var sound, sound0, sound1, sound2, sound3,sound4;
+var sound;
 var soundArr = [];
 //variable for p5 fast fourier transform
 var fourier, compressor;
@@ -10,7 +10,10 @@ var currentMusic = 0;
 
 var pane, paneFolder;
 
+//Instructions
+var instructions = 0;
 
+//All music sources included in report
 var musicPlaylist = [
 	{path: 'assets/music/stomper_reggae_bit.mp3',
 		thumb: 'assets/music/thumb/thumb.jpg',
@@ -67,14 +70,18 @@ var musicPlaylist = [
 		composer: 'Skullbeatz', length: '1:28'},
 ]
 
-
+//Loading all the required files before starting
 function preload(){
 
 	for(var i = 0; i<musicPlaylist.length; i++){
 		soundArr.push(loadSound(musicPlaylist[i].path));
 	}
+
+	//Source: https://unsplash.com/photos/BKAaLmT0tIs
 	bgImg = loadImage("https://images.unsplash.com/photo-1482686115713-0fbcaced6e28?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=747")
+	//Source: https://commons.wikimedia.org/wiki/File:P5.js_icon.svg
 	emblem = loadImage('./icons/P5.js_icon.svg');
+	// Source: https://fonts.google.com/
 	myFont = loadFont('/font/Oswald-Regular.ttf');
 
 }
@@ -92,9 +99,7 @@ function setup(){
 	 fourier = new p5.FFT();
 
 	 sound = soundArr[currentMusic];
-
 	 controls = new ControlsAndInput();
-
 
 	 //create a new visualisation container and add visualisations
 	 vis = new Visualisations();
@@ -104,18 +109,31 @@ function setup(){
 	 vis.add(new ReactiveCircles());
 	 vis.add(new ThreeDSpaceRocket());
 
-
 	//  DAT GUI
 	pane = new Tweakpane.Pane();
 	vis.selectedVisual.addPaneGui(pane);
-
 	vis.selectedVisual.setup();
 
 }
 
-
 function draw(){
 	background(0);
+
+	//Showing instructions before start
+	if(!instructions){
+		push()
+		fill(255);
+		textSize(32);
+		textAlign(CENTER, CENTER);
+		translate(width/2, height/2);
+		text('Viz menu can be accessed by <SPACE> bar', 10, 30);
+		pop()
+
+		setTimeout(function () {
+			instructions = 1;
+		}, 5000);
+
+	}
 
 	if(vis.selectedVisual.name === "3D Car & Cuboids"){
 		document.getElementById('threeJsContainer').style.display = 'block';
@@ -132,9 +150,9 @@ function draw(){
 
 }
 
-function mouseClicked(){
-	// controls.mousePressed();
-}
+// function mouseClicked(){
+// 	controls.mousePressed();
+// }
 
 function keyPressed(){
 	controls.keyPressed(keyCode);

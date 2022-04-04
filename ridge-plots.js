@@ -1,31 +1,37 @@
 //Constructor function for ridge-plots Vis
-function RidgePlots(){
+function RidgePlots() {
     this.name = "Ridge Plots";
-	this.panePARAMS = {
-		name: this.name,
-		arcSize: 400,
+    this.panePARAMS = {
+        name: this.name,
+        arcSize: 400,
         scaleFactor: 2.5,
-        maxRadius:500,
+        maxRadius: 500,
         speed: 0.9,
         lineGap: 40,
-        smallScale:5,
-        bigScale:50,
+        smallScale: 5,
+        bigScale: 50,
         ampFactor: 3
-	}
+    }
 
     //tweakpane GUI
-    this.addPaneGui = function() {
-        paneFolder = pane.addFolder({title: this.panePARAMS.name});
-        var arcShape = paneFolder.addFolder({ title: 'Arc Shape' })
-        var arcLines = paneFolder.addFolder({ title: 'Arc Lines' })
+    this.addPaneGui = function () {
+        paneFolder = pane.addFolder({
+            title: this.panePARAMS.name
+        });
+        var arcShape = paneFolder.addFolder({
+            title: 'Arc Shape'
+        })
+        var arcLines = paneFolder.addFolder({
+            title: 'Arc Lines'
+        })
         arcShape.addInput(this.panePARAMS, 'arcSize', {
             min: 200,
             max: 600,
-          });
+        });
         arcShape.addInput(this.panePARAMS, 'scaleFactor', {
             min: 1,
             max: 5,
-          });
+        });
 
         arcLines.addInput(this.panePARAMS, 'maxRadius', {
             min: 100,
@@ -52,33 +58,32 @@ function RidgePlots(){
     }
 
     //Remove tweakpane GUI
-    this.removePaneGui = function(){
+    this.removePaneGui = function () {
         paneFolder.dispose();
     }
 
-	let startX = width/2;
-    let startY = height/2
+    let startX = width / 2;
+    let startY = height / 2
     let output = [];
     let fourier = new p5.FFT(0.4, 1024);
     let amplitude = new p5.Amplitude();
 
     //Function for adding waves
-    this.addWave = function(){
+    this.addWave = function () {
         let w = fourier.waveform();
-        let radius = this.panePARAMS.arcSize/2;
+        let radius = this.panePARAMS.arcSize / 2;
 
         let outputWave = [];
 
-        for(let i = 0; i < w.length; i++) {
+        for (let i = 0; i < w.length; i++) {
 
             if (i % 20 === 0) {
                 let degree = map(i, 0, w.length, 0, 180);
                 let waveVal;
 
-                if(i < 1024 * 0.05 || i > 1024 * 0.95) {
-                    waveVal = map(w[i], - 1, 1, - this.panePARAMS.smallScale, this.panePARAMS.smallScale);
-                }
-                else {
+                if (i < 1024 * 0.05 || i > 1024 * 0.95) {
+                    waveVal = map(w[i], -1, 1, -this.panePARAMS.smallScale, this.panePARAMS.smallScale);
+                } else {
                     waveVal = map(w[i], -1, 1, -this.panePARAMS.bigScale, this.panePARAMS.bigScale);
                 }
 
@@ -88,61 +93,60 @@ function RidgePlots(){
                     waveVal: waveVal
                 })
             }
-	    }
-	    output.push(outputWave);
+        }
+        output.push(outputWave);
     }
 
-    this.setup = function() {
-    }
+    this.setup = function () {}
 
     // Draw function similar to P5.js
-    this.draw = function(){
+    this.draw = function () {
         colorMode(RGB, 255);
         angleMode(DEGREES);
-		push();
-        
+        push();
+
         background(0)
         noFill();
         stroke(255)
         strokeWeight(2)
 
         //Adding new wave values in outputWave Array
-        if(frameCount % this.panePARAMS.lineGap === 0){
+        if (frameCount % this.panePARAMS.lineGap === 0) {
             this.addWave();
         }
 
         //Generating Arc line from outputWave Array
-        for(var i= 0; i< output.length; i++){
+        for (var i = 0; i < output.length; i++) {
             var o = output[i]
-            var degree= 0
+            var degree = 0
             beginShape();
-            for(var j = 0; j<o.length; j++){
-                o[j].radius +=this.panePARAMS.speed
-                o[j].x = startX+(o[j].radius+o[j].waveVal*this.panePARAMS.ampFactor)*cos(o[j].degree+180);
-                o[j].y = startY+(o[j].radius+o[j].waveVal*this.panePARAMS.ampFactor)*sin(o[j].degree+180);
-                degree +=1
+            for (var j = 0; j < o.length; j++) {
+                o[j].radius += this.panePARAMS.speed
+                o[j].x = startX + (o[j].radius + o[j].waveVal * this.panePARAMS.ampFactor) * cos(o[j].degree + 180);
+                o[j].y = startY + (o[j].radius + o[j].waveVal * this.panePARAMS.ampFactor) * sin(o[j].degree + 180);
+                degree += 1
                 vertex(o[j].x, o[j].y);
             }
             endShape();
-            if(o[0].radius > this.panePARAMS.maxRadius){
-                output.splice(i,1);
+            if (o[0].radius > this.panePARAMS.maxRadius) {
+                output.splice(i, 1);
             }
         }
 
-		// fourier.analyze();
+        // fourier.analyze();
         // var bass = fourier.getEnergy( "bass" );
         // var bass = new p5.Amplitude();
-        var level  = amplitude.getLevel();
-        var mapLevel = map( level, 0, 1, 1, this.panePARAMS.scaleFactor);
+        var level = amplitude.getLevel();
+        var mapLevel = map(level, 0, 1, 1, this.panePARAMS.scaleFactor);
 
         //Drawing and resizing the bottom semicircle
         noStroke();
         fill(255);
         arc(startX, startY,
-            this.panePARAMS.arcSize*mapLevel,
-            this.panePARAMS.arcSize*mapLevel,
-             0, 180);
+            this.panePARAMS.arcSize * mapLevel,
+            this.panePARAMS.arcSize * mapLevel,
+            0, 180);
 
-		pop();
-	};
+        pop();
+    };
 }
