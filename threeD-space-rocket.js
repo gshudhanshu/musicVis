@@ -314,8 +314,6 @@ function ThreeDSpaceRocket(){
 
             carModel.getObjectByName( 'body' ).material.color = new THREE.Color( self.panePARAMS.carColor )
 
-            // carModel.getObjectByName( 'body' ).material.color = self.panePARAMS.carColor;
-
             for(var i = 0; i < cubesRight.length; i++){
                 var cubeR = cubesRight[i];
                 var cubeL = cubesLeft[i];
