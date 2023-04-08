@@ -9,7 +9,7 @@ function ControlsAndInput() {
       this.menuDisplayed = !this.menuDisplayed
     }
 
-    if (keycode > 48 && keycode < 58) {
+    if (keycode > 48 && keycode < 54) {
       var visNumber = keycode - 49
 
       if (paneFolder) {
