@@ -1,6 +1,6 @@
-//Contructor function for Reactive Circles Vis
-function ReactiveCircles() {
-    this.name = "Reactive Circles";
+//Contructor function for Reactive Circle Vis
+function ReactiveCircle() {
+    this.name = "Reactive Circle";
     this.panePARAMS = {
         name: this.name,
         bins: 16 * 2 ** 8,

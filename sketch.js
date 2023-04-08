@@ -101,8 +101,8 @@ function setup(){
 	 vis.add(new Spectrum());
 	 vis.add(new RidgePlots());
 	 vis.add(new CircleLine());
-	 vis.add(new ReactiveCircles());
-	 vis.add(new ThreeDSpaceRocket());
+	 vis.add(new ReactiveCircle());
+	 vis.add(new ThreeDCarCuboids());
 
 	//  DAT GUI
 	pane = new Tweakpane.Pane();

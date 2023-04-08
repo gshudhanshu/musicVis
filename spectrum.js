@@ -69,7 +69,7 @@ function Spectrum(){
 			rect(x, height*0.88, width*0.65/this.panePARAMS.bins, h);
 			rect(x, height*0.88, width*0.65/this.panePARAMS.bins, -5);
 
-		}  		
+		}
 		pop();
 	}
 }
