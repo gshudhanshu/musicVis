@@ -6,7 +6,7 @@ import {GLTFLoader} from './lib/GLTFLoader.js';
 import {DRACOLoader} from './lib/DRACOLoader.js';
 import {RGBELoader} from './lib/RGBELoader.js';
 
-function ThreeDSpaceRocket(){
+function ThreeDCar(){
 
     this.name = "3D Car & Cuboids";
     this.panePARAMS = {
@@ -491,4 +491,4 @@ function ThreeDSpaceRocket(){
 }
 
 //Setting global function from the module.
-window.ThreeDSpaceRocket = ThreeDSpaceRocket;
+window.ThreeDSpaceRocket = ThreeDCar;
