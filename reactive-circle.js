@@ -3,7 +3,7 @@ function ReactiveCircle() {
     this.name = "Reactive Circle";
     this.panePARAMS = {
         name: this.name,
-        bins: 16 * 2 ** 8,
+        bins: 64 * 2 ** 8,
         smoothing: 0.8,
         color1: '#ffffff',
         color2: '#ffff00',
