@@ -1,0 +1,11 @@
+# IDE / editor settings
+.idea/
+.vscode/
+*.iml
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Local dev server dependencies
+node_modules/
