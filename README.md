@@ -3,6 +3,20 @@
 “Music Visualizer” Project includes total 5 visualizations (extensions).
 [music-vis.vercel.app/](https://music-vis.vercel.app/)
 
+## Running locally
+
+There is no build step: it's plain HTML/JS using p5.js, p5.sound and three.js. Opening `index.html` straight from disk won't work, because browsers block ES modules and audio loading over `file://`. Serve the folder over HTTP instead:
+
+```bash
+git clone https://github.com/gshudhanshu/musicVis.git
+cd musicVis
+npx serve .            # or: python -m http.server 8000
+```
+
+Then open the URL printed in the terminal.
+
+## Visualizations
+
 All the visualizations have function to visualize the playing audio/music. I have used Object Oriented Programing for whole projects so, the coding style of the all the visualizers are very similar. Each extension is a constructor function which includes it’s name, tweakpane parameters, function for adding and removing tweakpane GUI, setup function, draw function and some other functions to make the code easier to understand and write for the visualizer.
 
 Following are the 5 visualizers:
